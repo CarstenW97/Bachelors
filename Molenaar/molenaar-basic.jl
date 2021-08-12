@@ -19,7 +19,6 @@ register(ancat, :michaelis_menten, 4, michaelis_menten; autodiff = true)
 
 @variables molenaar begin
 
-
     # Concentrations
     LB <= sub_out <= UB # substarte outside concentration
     LB <= sub_in  <= UB # subtrate inside concentration
