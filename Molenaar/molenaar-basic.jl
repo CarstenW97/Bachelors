@@ -11,6 +11,11 @@ molenaar = Model(optimizer_with_attributes(KNITRO.Optimizer,
     "opttolabs" => 1e-16,
     "honorbnds" => 1,
     "ms_maxsolves" => 2))
+JuMP.set_silent(molenaar)
+
+michaelis_menten(metabolite, protein, kcat, Km) =
+        (kcat * protein * metabolite)/(Km + metabolite)
+register(ancat, :michaelis_menten, 4, michaelis_menten; autodiff = true)
 
 @variables molenaar begin
 
@@ -37,3 +42,4 @@ molenaar = Model(optimizer_with_attributes(KNITRO.Optimizer,
     0 <= used_ribo[1:4] <= 1 # ribosomes used for synthesis
     LB <= l_to_t <= UB       # ratio of lipids to transporters
 end
+
