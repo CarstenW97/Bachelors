@@ -3,7 +3,7 @@ using CairoMakie, FileIO
 using CSV, DataFrames
 using Statistics
 
-imgpath = joinpath("Molenaar", "Plots")
+imgpath = joinpath("Molenaar", "Figure 3", "Plots")
 resultspath = joinpath("Molenaar", "Results")
 
 x = [res["sub_out"] for res in results]
