@@ -14,7 +14,7 @@ ax = Axis(fig[1,1])
 scatter!(ax, x, y)
 lines!(ax, x, y)
 
-ax.xlabel = "Growth rate"
+ax.xlabel = "Growth rate (1/h)"
 ax.ylabel = "Ribosome synthesis rate"
 fig
 

@@ -14,7 +14,7 @@ b = [] # matabolic rate
 c = [] # ribosomale rate
 d = [] # lipid biosynthesis rate
 
-for i in 1:20
+for i in 1:31
     push!(a, y[i][1])
     push!(b, y[i][2])
     push!(c, y[i][3])
@@ -37,7 +37,7 @@ line3 = lines!(ax, x, c)
 scatter4 = scatter!(ax, x, d) # pink
 line4 = lines!(ax, x, d)
 
-ax.xlabel = "Growth rate"
+ax.xlabel = "Growth rate (1/h)"
 ax.ylabel = "Protein fraction"
 fig[1, 1] = Legend(fig, [[scatter1, line1], [scatter2, line2], [scatter3, line3], [scatter4, line4]], ["Transporter", "Metabolism", "Ribosomes", "Lipids"],
     tellheight = false, tellwidth = false, halign = :right, valign = :top, labelsize = 14)

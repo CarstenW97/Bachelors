@@ -62,10 +62,10 @@ function molenaar_basic(sub_out_con)
         v_metab == michaelis_menten(sub_in, metab, kcat_metab, Km_metab)
         v_lip == michaelis_menten(prec, lip_syn, kcat_lip, Km_lip)
 
-        beta * (lip_syn + transp) == 1                           # membrane proportions
-        sum(used_ribo[i] for i=1:4) == 1                                # ribosome proportions
-        metab + ribo + lip_syn <= 1.0                               # intracellular density
-        transp <= lipid                                                # transporter density
+        beta * (lipid + transp) == 1     # membrane proportions
+        sum(used_ribo[i] for i=1:4) == 1   # ribosome proportions
+        metab + ribo + lip_syn <= 1.0      # intracellular density
+        transp <= lipid                    # transporter density
 
         # ribosome activity producing enzymes
         used_ribo[1] * v_ribo - mu * transp == 0

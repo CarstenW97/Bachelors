@@ -15,7 +15,7 @@ scatter!(ax, x, y)
 lines!(ax, x, y)
 
 ax.xlabel = "Substrate concentration outside"
-ax.ylabel = "Growth rate"
+ax.ylabel = "Growth rate (1/h)"
 fig
 
 FileIO.save(joinpath(imgpath, "Figure_3B.pdf"), fig)

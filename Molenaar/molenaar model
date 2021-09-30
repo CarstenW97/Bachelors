@@ -1,0 +1,182 @@
+ontext
+
+CELL WITH ALTERNATIVE PATHWAYS AND AN ENERGY INTERMEDIATE (COFACTOR)
+
+This model simulates a cell with alternative catabolic pathways generating
+an energy intermediate (ATP). The reaction scheme is as follows:
+
+
+             metef                  rib
+              or                  ------> proteins
+   trS       catef       prc    /
+S -----> Si --------> M -----> P
+             /    \     /   \  \-------> lipids
+          ADP    ATP  ATP  ADP     lpb
+
+We do not model the enzyme that synthesizes ADP but introduce a flux into
+ADP that equals mu*cAXP where cAXP equals the predetermined total concentration
+of ADP and ATP.
+
+$offtext
+
+SETS
+cmp "all cell components" / trS    "transporter for substrate S"
+                            rib    "ribosome"
+                            catef  "catalytically efficient catabolic enzyme"
+                            metef  "energetically efficient catabolic enzyme"
+                            prc    "precursor generating enzyme"
+                            lpb    "lipid biosynthesis enzyme"
+                            Si     "intracellular S"
+                            M      "intermediate M"
+                            P      "precursor P"
+                            lip    "lipid" /
+
+  pro(cmp)  "all proteins" / trS, prc, catef, metef, rib, lpb /
+  enz(pro)  "enzymes" / trS, prc, catef, metef, rib, lpb /
+  ATPc(enz) "ATP consuming enzymes" / prc /
+  ADPc(enz) "ADP consuming enzymes" / metef, catef /
+  memP(pro) "membrane located proteins" / trS /
+  mem(cmp)  "all membrane located components" / trS, lip /
+  met(cmp)  "metabolites" / Si, M, P, lip /
+  intM(cmp) "intracellular metabolites" / Si, M, P /
+  intP(pro) "intracellular proteins";
+
+intP(pro) = not(memP(pro));
+Display intP;
+
+PARAMETERS
+
+kcat(enz) "kcat of enzyme"
+          /trS    7
+           prc    5
+           rib    3
+           catef  10
+           metef  5
+           lpb    5/
+
+Km(enz)   "Km of enzyme"
+          /trS    1
+           prc    1
+           rib    1
+           catef  1
+           metef  1
+           lpb    1/
+
+KmATP(ATPc) "Affinity constants for ATP"
+          /prc    1/
+
+KmADP(ADPc) "Affinity constants for ADP"
+          /catef  0.5
+           metef  0.5/
+
+Pmax    "maximal intracellular protein concentration"    /1/
+PLmax   "maximal membrane protein/lipid ratio"           /1/
+Mmax    "maximal total metabolite concentration"         /2/
+
+sA(mem) "specific surface of membrane located component"
+         /trS  1
+          lip  1/
+
+cAXP    "total concentration of energy intermediate" /1/
+
+gamm    "energetic efficiency of the catalytically efficient catabolic enzyme" /0.6/
+
+S       "extracellular S concentration"
+
+prccost "precursor cost in terms of ATP"       /1/ ;
+
+PARAMETER
+
+table stoich(met, pro) "reaction stoichiometry matrix"
+      trS   prc   rib    catef   metef  lpb
+Si      1                   -1      -1
+P            1     -1                    -1
+M           -1               1       1
+lip                                       1;
+
+POSITIVE VARIABLES
+
+a(pro)   "fraction of ribosomes engaged in synthesis of protein X"
+beta     "volume to surface ratio"
+c(cmp)   "concentration of component"
+v(enz)   "catalytic rate of enzyme"
+cATP     "concentration of charged energy intermediate"
+cADP     "concentration of uncharged energy intermediate";
+
+FREE VARIABLE
+* Since the objective variable has to be a "free" variable i.e. defined
+* on the <-INF,+INF> interval, we transform mu to the logarithmic scale
+* So, exp(logmu) = mu and maximizing logmu is equivalent to maximizing mu.
+logmu    "natural logarithm of the specific growth rate";
+
+EQUATIONS
+
+volume     "intracellular volume is determined by beta and the membrane surface"
+alphaSum   "fractions of ribosomes engaged in synthesis of all proteins sum up to 1"
+Pbal(pro)  "balance for proteins"
+Mbal(met)  "balance for metabolites"
+balATP     "balance for ATP"
+balADP     "balance for ADP"
+cat_rib    "catalytic rate of ribosome pool"
+cat_trS    "catalytic rate of S transporter pool"
+cat_prc    "catalytic rate of precursor generating enzyme pool"
+cat_catef  "catalytic rate of metabolic enzyme pool"
+cat_metef  "catalytic rate of metabolic enzyme pool"
+cat_lpb    "catalytic rate of lipid biosynthesis enzyme pool"
+maxP       "maximal intracellular protein concentration"
+*maxM       "maximal total metabolite concentration"
+membr      "membrane integrity condition";
+
+volume..     beta*Sum(mem,sA(mem)*c(mem)) =E= 1;
+alphaSum..   Sum(pro,a(pro)) =E= 1;
+Pbal(pro)..  a(pro)*v('rib') - exp(logmu)*c(pro) =E= 0;
+Mbal(met)..  Sum(enz, stoich(met,enz)*v(enz)) - exp(logmu)*c(met) =E= 0;
+balATP..     v('metef') + gamm*v('catef') - prccost*v('prc') - exp(logmu)*cATP =E= 0;
+balADP..     prccost*v('prc') - v('metef') - gamm*v('catef') - exp(logmu)*cADP + exp(logmu)*cAXP =E= 0;
+cat_rib..    v('rib') =E= kcat('rib')*c('rib')*c('P')/(Km('rib') + c('P'));
+cat_trS..    v('trS') =E= kcat('trS')*c('trS')*S/(Km('trS') + S);
+cat_prc..    v('prc') =E= kcat('prc')*c('prc')*c('M')*cATP/(c('M')*cATP + Km('prc')*cATP + KmATP('prc')*c('M'));
+cat_catef..  v('catef') =E= kcat('catef')*c('catef')*c('Si')*cADP/(c('Si')*cADP + c('Si')*KmADP('catef') + cADP*Km('catef'));
+cat_metef..  v('metef') =E= kcat('metef')*c('metef')*c('Si')*cADP/(c('Si')*cADP + c('Si')*KmADP('metef') + cADP*Km('metef'));
+cat_lpb..    v('lpb') =E= kcat('lpb')*c('lpb')*c('P')/(Km('lpb') + c('P'));
+maxP..       Sum(intP,c(intP)) =L= Pmax;
+*maxM..       Sum(intM,c(intM)) =L= Mmax;
+membr..      Sum(memP, c(memP)) =L= c('lip')*PLmax;
+
+MODEL CELL /ALL/;
+
+CELL.optfile =1;
+
+*S = 100;
+*SOLVE CELL USING NLP MAXIMIZING logmu;
+
+*$ontext
+
+PARAMETER report(*,*,*) "process level report" ;
+
+SET i   "iteration driver" / 1*55 /;
+
+S=100;
+
+* Initial values for ATP and ADP (does not affect result)
+cATP.l=cAXP/2;
+cADP.l=cAXP/2;
+
+LOOP (i,
+         SOLVE CELL USING NLP MAXIMIZING logmu;
+         report('','S',i) = S;
+         report('','mu',i) = exp(logmu.l);
+         report('','beta',i) = beta.l;
+         report('alpha',pro,i) = a.l(pro);
+         report('conc',cmp,i) = c.l(cmp);
+         report('rate',enz,i) = v.l(enz);
+         report('','cATP',i) = cATP.l;
+         report('','cADP',i) = cADP.l;
+         S = S/1.2;
+);
+OPTION decimals = 4;
+DISPLAY report;
+* The command below dumps the results in an excel file
+* Uncomment it if you want this to happen
+* $libinclude xldump report alternative_pathways_energy_cofactor.xls modelC!a1
+*$offtext
