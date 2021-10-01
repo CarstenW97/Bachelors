@@ -25,7 +25,6 @@ function basemodel_1(S_ext)
         LB <= ED_enz    <= UB # ED pathway enzyme
         LB <= lpd       <= UB # Lipidsynthesis enzyme 
 
-        #LB <= S_ext     <= UB # extracellular substrate
         LB <= S_int     <= UB # intracellular substrate
         LB <= W         <= UB # EMP/ED product
         LB <= Lip       <= UB # Lipid
