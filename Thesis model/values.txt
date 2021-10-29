@@ -1,0 +1,87 @@
+## EMP ##
+Change in free energy for each step of glycolysis (https://en.wikipedia.org/wiki/Glycolysis)
+
+Step	Reaction	                                                                                 EC         ΔG°' / (kJ/mol)     kcat (1/s)      MW (KDa)                SA (µmol/min/mg)
+#1#	    Glucose + ATP4− → Glucose-6-phosphate2− + ADP3− + H+	                                                 −16.7	             213.75        135     135 mg/umol     95
+2	    Glucose-6-phosphate2− → Fructose-6-phosphate2−	                                             5.3.1.9       1.67	             126            61.53   61.53 mg/umol  122.87
+3	    Fructose-6-phosphate2− + ATP4− → Fructose-1,6-bisphosphate4− + ADP3− + H+	                 2.7.1.11    −14.2	             185
+4	    Fructose-1,6-bisphosphate4− → Dihydroxyacetone phosphate2− + Glyceraldehyde-3-phosphate2−	 4.1.2.13     23.9	             -
+5	    Dihydroxyacetone phosphate2− → Glyceraldehyde-3-phosphate2−	                                 5.3.1.1       7.56	             150
+6	    Glyceraldehyde-3-phosphate2− + Pi2− + NAD+ → 1,3-Bisphosphoglycerate4− + NADH + H+	         1.2.1.12      6.30	             268  
+7	    1,3-Bisphosphoglycerate4− + ADP3− → 3-Phosphoglycerate3− + ATP4−	                         2.7.2.3     −18.9	             329
+8	    3-Phosphoglycerate3− → 2-Phosphoglycerate3−	                                                 5.4.2.1       4.4	             -
+9	    2-Phosphoglycerate3− → Phosphoenolpyruvate3− + H2O	                                         4.2.1.11      1.8	             396  
+10	    Phosphoenolpyruvate3− + ADP3− + H+ → Pyruvate− + ATP4−	                                     2.7.1.40    −31.7	             - 
+
+Steps 2 - 10: ΔG°' -35.87       kcat 126    SA 13.65
+Steps 2 -  9: ΔG°' - 4.71       kcat 126    SA 15.35
+
+
+## ED ##
+
+Step	Reaction	                                                                            EC         ΔG°' / (kJ/mol)     kcat (1/s)       MW (KDa)                    SA (µmol/min/mg)
+#1#	    Glucose + ATP4− → Glucose-6-phosphate2− + ADP3− + H+	                                            −16.7	             
+2	    Glucose-6-phosphate(aq) + NADP(aq) + H2O(l) ⇌ 6-Phosphogluconate(aq) + NADPH(aq)       -             -32.2              -  
+3	    6-Phosphogluconate(aq) ⇌ 2-Keto-3-deoxy-6-phosphogluconate(aq) + H2O(l)                4.2.1.12    -42.8                -
+4	    2-Keto-3-deoxy-6-phosphogluconate(aq) ⇌ Glyceraldehyde 3-phosphate(aq) + Pyruvate(aq)  4.1.2.14     16.3                -
+5	    Glyceraldehyde-3-phosphate2− + Pi2− + NAD+ → 1,3-Bisphosphoglycerate4− + NADH + H+	    1.2.1.12      6.30	             268                35.53   35.53 mg/umol   452.58
+6	    1,3-Bisphosphoglycerate4− + ADP3− → 3-Phosphoglycerate3− + ATP4−	                    2.7.2.3     −18.9	             329
+7	    3-Phosphoglycerate3− → 2-Phosphoglycerate3−	                                            5.4.2.1       4.4	             -
+8	    2-Phosphoglycerate3− → Phosphoenolpyruvate3− + H2O	                                    4.2.1.11      1.8	             396  
+9	    Phosphoenolpyruvate3− + ADP3− + H+ → Pyruvate− + ATP4−	                                2.7.1.40    −31.7	             - 
+
+Steps 2 -  9: ΔG°' -113.5       kcat 268    SA 56.57
+Steps 2 -  8: ΔG°' - 81.8       kcat 268    SA 64.65
+
+
+## Glutamate synthesis ## 
+
+Step	Reaction	                                                                                                                    EC          ΔG°' / (kJ/mol)     kcat (1/s)  MW (KDa)            SA (µmol/min/mg)
+1 EMP   Glucose-6-phosphate + ADP → Phosphoenolpyruvate + ATP       (2 PEP in total)	                                                             - 4.71              126                            15.35
+1 ED    Glucose-6-phosphate + ADP → Phosphoenolpyruvate + ATP       (1 PEP in total)	                                                             -81.8               268                            64.65
+2       H2O(l) + CO2(aq) + Phosphoenolpyruvate(aq) ⇌ Orthophosphate(aq) + Oxaloacetate(aq)                                              4.1.1.31     -40.3               540        93    93 mg/umol    348.39
+3       Pyruvate(aq) + Oxaloacetate(aq) + NAD(aq) + NADP(aq) + H2O(l) ⇌ alpha-Ketoglutarate(aq) + 2 CO2(aq) + NADH(aq) + NADPH(aq)                   -60.7                 4        94    94 mg/umol      0.51
+4       alpha-Ketoglutarate(aq) + NH3(aq) + NADPH(aq) ⇌ Glutamate(aq) + NADP(aq) + H2O(l)                                               1.4.1.13     -33.4                20       135   135 mg/umol      8.89      
+
+
+## NAD recovery ##
+
+Step	Reaction	                                     EC          ΔG°' / (kJ/mol)     kcat (1/s)    MW (KDa)                 SA (µmol/min/mg)
+1	    Pyruvate(aq) + NADH(aq) ⇌ Lactate(aq) + NAD(aq)	 1.1.1.28    -23.7                31            65      65 mg/umol      28.62
+
+## Importers/Exporters ##
+Component                        EC          ΔG°' / (kJ/mol)     kcat (1/s)    MW (KDa)                 SA (µmol/min/mg)
+NH3 Importer (passive diffusion)
+CO2 Exporter (passive diffusion)
+Lac Exporter (permease)
+
+## Upkeep ##
+Step	Reaction	                ΔG°' / (kJ/mol)    kcat (1/s)    MW (KDa)                     SA (µmol/min/mg)
+1       ATP + H2O → ADP + Pi        -57                 10             78          78 mg/umol     33.3
+
+2        nad + nadph ⇌ nadh + nadp   0                 167.9          51.5         51.5 mg/umol   195.6
+
+
+g6p   # glucose-6-phosphate 
+pyr   # pyruvate 
+pep   # phosphoenolpyrovate
+oac   # oxalacetate
+akg   # alpha-ketogluterate
+glu   # glutamate
+atp   # ATP
+adp   # ADP
+nad   # NAD
+nadh  # NADH
+nadp  # NADP
+nadph # NADPH
+
+pts      # enzyme for: glc external + ATP -> ADP + g6p
+emp      # enzyme for: g6p + 2NAD + 2ADP -> 2NADH + 2ATP + 2pep
+pyk      # enzyme for: pep + ADP -> ATP + pyr
+ldh      # enzyme for: pyr + NADH -> NAD + lac
+ppc      # enzyme for: pep + CO2 -> oac + P
+akgsyn   # enzyme for: pyr + oac + NAD + NADP -> akg + NADH + NADPH
+gdhm     # enzyme for: akg + NH4 + NADPH -> glu + NADP
+burn     # enzyme for: ATP -> ADP
+nadtrdh  # enzyme for: NAD + NADPH -> NADH + NADP
+lp       # enzyme for: lac internal -> lac external
