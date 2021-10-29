@@ -42,7 +42,7 @@ fig[1, 1] = Legend(fig, [[scatter1, line1], [scatter2, line2]], ["Glucose-6-Phos
     tellheight = false, tellwidth = false, halign = :left, valign = :bottom, labelsize = 14)
 fig
 
-FileIO.save(joinpath(imgpath, "Glu_EMP.pdf"), fig) 
+FileIO.save(joinpath(imgpath, "Glu_EMP_G6P+GLU.pdf"), fig) 
 
 ## Enzyme concentration band plot ##
 
@@ -74,6 +74,36 @@ f[1,2] = Legend(f, ax, "Protein",
                     unique=true,  framevisible = false)
 f
 
-FileIO.save(joinpath(imgpath, "Enzyme_band.pdf"), f)
+FileIO.save(joinpath(imgpath, "Glu_ EMP_Enzymeband.pdf"), f)
 
+## Rates ##
 
+x = [results_emp["mu"] for results_emp in res_emp]
+i = [results_emp["v_pts"] for results_emp in res_emp]
+j = [results_emp["v_pyk"] for results_emp in res_emp]
+k = [results_emp["v_ldh"] for results_emp in res_emp]
+l = [results_emp["v_burn"] for results_emp in res_emp]
+m = [results_emp["v_lp"] for results_emp in res_emp]
+
+fig = Figure()
+ax = Axis(fig[1,1])
+scatter1 = scatter!(ax, x, i)
+line1 =lines!(ax, x, i)
+scatter2 = scatter!(ax, x, j)
+line2 =lines!(ax, x, j)
+scatter3 = scatter!(ax, x, k)
+line3 =lines!(ax, x, k)
+scatter4 = scatter!(ax, x, l)
+line4 =lines!(ax, x, l)
+scatter5 = scatter!(ax, x, m)
+line5 =lines!(ax, x, m)
+
+ax.xlabel = "Biomass [1/h]"
+ax.ylabel = "Fluxes [mmol/gDW/h]"
+
+fig[1, 1] = Legend(fig, [[scatter1, line1], [scatter2, line2], [scatter3, line3], [scatter4, line4], [scatter5, line5]], 
+                         ["v_pts", "v_pyk", "v_ldh", "v_burn", "v_lp"],
+    tellheight = false, tellwidth = false, halign = :left, valign = :bottom, labelsize = 14)
+fig
+
+FileIO.save(joinpath(imgpath, "Glu_EMP_Rates.pdf"), fig)
