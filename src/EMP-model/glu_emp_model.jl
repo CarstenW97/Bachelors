@@ -1,34 +1,28 @@
-module Glu_EMP_Model
+# module Glu_EMP_Model
 using JuMP
 using KNITRO
 
-function glu_emp_model(glc_ext_input)
-    
+# function glu_emp_model(glc_ext_input)
+    glc_ext_input = 0.05
     glu_emp = Model(optimizer_with_attributes(KNITRO.Optimizer,
         "ms_enable" => 1,
-        "opttol" => 1E-16,
-        "opttolabs" => 1e-16,
-        "honorbnds" => 1,
-        "ms_maxsolves" => 10))
-    JuMP.set_silent(glu_emp)
+        "ms_maxsolves" => 20))
+    # JuMP.set_silent(glu_emp)
+
+    # Thermodynamic function
+    thermo_factor(x) = tanh(0.7 * x) # x = ΔrG/RT
+    register(glu_emp, :thermo_factor, 1, thermo_factor; autodiff = true)
 
     # Bounds
-    k = 1e-6
-
-    fmax(x) = (x + sqrt(k + x^2))/2                   # max(0, x) approximation
-    register(glu_emp, :fmax, 1, fmax; autodiff = true) 
-    fmin(x) = -fmax(-x)                               # min(0, x) approximation
-    register(glu_emp, :fmin, 1, fmin; autodiff = true)
-
     LB_enz =    0.0     # [g enz / g DW cell]
     UB_enz =    1.0     # [g enz / g DW cell]
     LB_met = log(1e-6)  # [log(1 uM)]
-    UB_met = log(10e-3) # [log(10 mM)]
+    UB_met = log(100e-3) # [log(100 mM)]
     LB_v   = - 50       # [mmol/gDW/h]
     UB_v   =   50       # [mmol/gDW/h]
     LB_dg  = -100       # [kJ/mol]
     UB_dg  =  100       # [kJ/mol]
-    
+
     @variables glu_emp begin
         # biomass [1/h] (g6p + ATP -> ADP)
         0 <= mu <= 10
@@ -46,8 +40,8 @@ function glu_emp_model(glc_ext_input)
         LB_enz <= lp      <= UB_enz # enzyme for: lac internal -> lac external
 
         # Metabolite concentrations [log(M)]
-        LB_met <= g6p   <= UB_met # glucose-6-phosphate 
-        LB_met <= pyr   <= UB_met # pyruvate 
+        LB_met <= g6p   <= UB_met # glucose-6-phosphate
+        LB_met <= pyr   <= UB_met # pyruvate
         LB_met <= pep   <= UB_met # phosphoenolpyrovate
         LB_met <= oac   <= UB_met # oxalacetate
         LB_met <= akg   <= UB_met # alpha-ketogluterate
@@ -59,14 +53,13 @@ function glu_emp_model(glc_ext_input)
         LB_met <= nadh  <= UB_met # NADH
         LB_met <= nadp  <= UB_met # NADP
         LB_met <= nadph <= UB_met # NADPH
-
-        #LB_met <= co2   <= UB_met
-        #LB_met <= phos  <= UB_met # phosphate
-        #LB_met <= nh4   <= UB_met
+        LB_met <= co2   <= UB_met # CO2
+        LB_met <= phos  <= UB_met # phosphate
+        LB_met <= nh4   <= UB_met # NH4
 
         # Fluxes [mmol/gDW/h]
-        LB_v <= v_pts     <= UB_v  
-        LB_v <= v_emp     <= UB_v  
+        LB_v <= v_pts     <= UB_v
+        LB_v <= v_emp     <= UB_v
         LB_v <= v_pyk     <= UB_v
         LB_v <= v_ldh     <= UB_v
         LB_v <= v_ppc     <= UB_v
@@ -90,11 +83,8 @@ function glu_emp_model(glc_ext_input)
     end
 
     @NLparameters glu_emp begin
-        
-        #R  == 8.3145e-3 # gas constants [kJ/K/mol]
-        #T  == 298.15    # tempreature   [K]
-        #RT == R * T
-        RT == 8.3145e-3 * 298.15
+
+        RT == 8.3145e-3 * 298.15 # [kJ/mol]
 
         # Enzyme rates
         kcat_pts     == 213.75
@@ -128,7 +118,7 @@ function glu_emp_model(glc_ext_input)
         total_proteome_mass_fraction == 0.26 # [g enz/gDW]
 
         # maintenance requirement
-        min_burn_flux == 1 # [mmol/gDW/h]
+        min_burn_flux == 0.001 # [mmol/gDW/h]
     end
 
     @NLconstraints glu_emp begin
@@ -143,30 +133,19 @@ function glu_emp_model(glc_ext_input)
         dg_burn    == dG0_burn + RT * (adp - atp)
         dg_nadtrdh == dG0_nadtrdh + RT * (nad + nadph - nadh - nadp)
         dg_lp      == dG0_lp + RT * (lac_ext - lac)
-        
-        # flux bounds due to kinetics and thermodynamics
-        pts * kcat_pts * fmin(exp(-dg_pts/RT) - 1) <= v_pts
-        emp * kcat_emp * fmin(exp(-dg_emp/RT) - 1) <= v_emp
-        pyk * kcat_pyk * fmin(exp(-dg_pyk/RT) - 1) <= v_pyk
-        ldh * kcat_ldh * fmin(exp(-dg_ldh/RT) - 1) <= v_ldh
-        ppc * kcat_ppc * fmin(exp(-dg_ppc/RT) - 1) <= v_ppc
-        akgsyn * kcat_akgsyn * fmin(exp(-dg_akgsyn/RT) - 1) <= v_akgsyn
-        gdhm * kcat_gdhm * fmin(exp(-dg_gdhm/RT) - 1) <= v_gdhm
-        burn * kcat_burn * fmin(exp(-dg_burn/RT) - 1) <= v_burn
-        nadtrdh * kcat_nadtrdh * fmin(exp(-dg_nadtrdh/RT) - 1) <= v_nadtrdh
-        lp * kcat_lp * fmin(exp(-dg_lp/RT) - 1) <= v_lp
-        
-        v_pts <= pts * kcat_pts * fmax(1 - exp(dg_pts/RT))
-        v_emp <= emp * kcat_emp * fmax(1 - exp(dg_emp/RT))
-        v_pyk <= pyk * kcat_pyk * fmax(1 - exp(dg_pyk/RT))
-        v_ldh <= ldh * kcat_ldh * fmax(1 - exp(dg_ldh/RT))
-        v_ppc <= ppc * kcat_ppc * fmax(1 - exp(dg_ppc/RT))
-        v_akgsyn <= akgsyn * kcat_akgsyn * fmax(1 - exp(dg_akgsyn/RT))
-        v_gdhm <= gdhm * kcat_gdhm * fmax(1 - exp(dg_gdhm/RT))
-        v_burn <= burn * kcat_burn * fmax(1 - exp(dg_burn/RT))
-        v_nadtrdh <= nadtrdh * kcat_nadtrdh * fmax(1 - exp(dg_nadtrdh/RT))
-        v_lp <= lp * kcat_lp * fmax(1 - exp(dg_lp/RT))
-        
+
+        # flux to kinetics and thermodynamics
+        v_pts == pts * kcat_pts * thermo_factor(dg_pts/RT)
+        v_emp == emp * kcat_emp * thermo_factor(dg_emp/RT)
+        v_pyk == pyk * kcat_pyk * thermo_factor(dg_pyk/RT)
+        v_ldh == ldh * kcat_ldh * thermo_factor(dg_ldh/RT)
+        v_ppc == ppc * kcat_ppc * thermo_factor(dg_ppc/RT)
+        v_akgsyn == akgsyn * kcat_akgsyn * thermo_factor(dg_akgsyn/RT)
+        v_gdhm == gdhm * kcat_gdhm * thermo_factor(dg_gdhm/RT)
+        v_burn == burn * kcat_burn * thermo_factor(dg_burn/RT)
+        v_nadtrdh == nadtrdh * kcat_nadtrdh * thermo_factor(dg_nadtrdh/RT)
+        v_lp == lp * kcat_lp * thermo_factor(dg_lp/RT)
+
         # mass balance constraints
         v_pts - v_emp                                     ==  mu # g6p
         2 * v_emp - v_pyk                                 ==  0  # pep
@@ -174,24 +153,24 @@ function glu_emp_model(glc_ext_input)
         v_ldh - v_lp                                      ==  0  # lac
         v_ppc - v_akgsyn                                  ==  0  # oac
         v_akgsyn - v_gdhm                                 ==  0  # akg
-        v_gdhm                                            ==  0  # glu 
+        v_gdhm                                            ==  0  # glu
         v_emp + v_pyk - v_pts - v_burn                    ==  mu # atp
         v_pts + v_burn - v_emp - v_pyk                    == -mu # adp
         v_ldh + v_gdhm - 2 * v_emp - v_nadtrdh - v_akgsyn ==  0  # nad
         2 * v_emp + v_akgsyn + v_nadtrdh - v_ldh - v_gdhm ==  0  # nadh
         v_gdhm - v_akgsyn - v_nadtrdh                     ==  0  # nadp
         v_akgsyn + v_nadtrdh - v_gdhm                     ==  0  # nadph
-        
+
         # density constraint(s) (can add more, e.g. membrane)
         pts + emp + pyk + ldh + ppc + akgsyn + gdhm + burn + nadtrdh + lp  <= total_proteome_mass_fraction
-        
+
         # minimum maintenance
         min_burn_flux <= v_burn
-        
+
         # measured ratio constraints (not strictly necessary)
-        atp   == log(10)  + adp  # atp/adp = 10, but remember that the concentration variables are logged
-        nadh  == log(0.2) + nad  
-        nadph == log(0.2) + nadp 
+        # atp   == log(10)  + adp  # atp/adp = 10, but remember that the concentration variables are logged
+        # nadh  == log(0.2) + nad
+        # nadph == log(0.2) + nadp
     end
 
     @objective(glu_emp, Max, mu)
@@ -216,14 +195,14 @@ function glu_emp_model(glc_ext_input)
         "pep"       => value(pep),
         "oac"       => value(oac),
         "akg"       => value(akg),
-        "lac"       => value(lac), 
+        "lac"       => value(lac),
         "glu"       => value(glu),
         "atp"       => value(atp),
         "adp"       => value(adp),
         "nad"       => value(nad),
         "nadh"      => value(nadh),
         "nadp"      => value(nadp),
-        "nadph"     => value(nadph),        
+        "nadph"     => value(nadph),
         "v_pts"     => value(v_pts),
         "v_emp"     => value(v_emp),
         "v_pyk"     => value(v_pyk),
@@ -234,7 +213,7 @@ function glu_emp_model(glc_ext_input)
         "v_burn"    => value(v_burn),
         "v_nadtrdh" => value(v_nadtrdh),
         "v_lp"      => value(v_lp))
-    return results_emp
-end     
+    # return results_emp
+# end
 
-end #module
+# end #module
