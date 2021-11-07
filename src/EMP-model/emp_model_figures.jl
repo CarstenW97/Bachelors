@@ -1,25 +1,15 @@
-include(joinpath("Thesis model", "glu_ed_model.jl"))
-import .Glu_ED_Model
-
-res_ed = []
-for var in [0.0001:0.0005:0.005;]
-  push!(res_ed, Glu_ED_Model.glu_ed_model(var))
-end
-
-################################################################
-
 using Colors, ColorSchemes
 using CairoMakie, FileIO
 using CSV, DataFrames
 using Statistics
 
-imgpath = joinpath("Thesis model", "Figures" , "ED_Model")
-resultspath = joinpath("Thesis model", "Results", "ED_Model")
+imgpath = joinpath("Thesis model", "Figures" , "EMP_Model")
+resultspath = joinpath("Thesis model", "Results", "EMP_Model")
 
-#CSV.write(joinpath(resultspath, "Results_ED.csv"), res_ed[1])
+#CSV.write(joinpath(resultspath, "Results_EMP.csv"), res_emp[1])
 
-x = [results_ed["glc_ext"] for results_ed in res_ed]
-y = [results_ed["mu"] for results_ed in res_ed]
+x = [results_emp["glc_ext"] for results_emp in res_emp]
+y = [results_emp["mu"] for results_emp in res_emp]
 
 fig = Figure()
 ax = Axis(fig[1,1])
@@ -31,13 +21,13 @@ ax.ylabel = "Biomass [1/h]"
 
 fig
 
-FileIO.save(joinpath(imgpath, "Glu_ED_Growth.pdf"), fig)
+FileIO.save(joinpath(imgpath, "Glu_EMP_Growth.pdf"), fig)
 
 ## ##
 
-x = [results_ed["mu"] for results_ed in res_ed]
-a = [results_ed["g6p"] for results_ed in res_ed]
-b = [results_ed["glu"] for results_ed in res_ed]
+x = [results_emp["mu"] for results_emp in res_emp]
+a = [results_emp["g6p"] for results_emp in res_emp]
+b = [results_emp["glu"] for results_emp in res_emp]
 
 fig = Figure()
 ax = Axis(fig[1,1])
@@ -53,20 +43,20 @@ fig[1, 1] = Legend(fig, [[scatter1, line1], [scatter2, line2]], ["Glucose-6-Phos
     tellheight = false, tellwidth = false, halign = :left, valign = :bottom, labelsize = 14)
 fig
 
-FileIO.save(joinpath(imgpath, "Glu_ED_G6P+GLU.pdf"), fig) 
+FileIO.save(joinpath(imgpath, "Glu_EMP_G6P+GLU.pdf"), fig)
 
 ## Enzyme concentration band plot ##
 
-x = [results_ed["mu"] for results_ed in res_ed]
-c = [results_ed["pts"] for results_ed in res_ed]
-d = [results_ed["ed"] for results_ed in res_ed]
-e = [results_ed["pyk"] for results_ed in res_ed]
-f = [results_ed["ldh"] for results_ed in res_ed]
-g = [results_ed["burn"] for results_ed in res_ed]
-h = [results_ed["lp"] for results_ed in res_ed]
+x = [results_emp["mu"] for results_emp in res_emp]
+c = [results_emp["pts"] for results_emp in res_emp]
+d = [results_emp["emp"] for results_emp in res_emp]
+e = [results_emp["pyk"] for results_emp in res_emp]
+f = [results_emp["ldh"] for results_emp in res_emp]
+g = [results_emp["burn"] for results_emp in res_emp]
+h = [results_emp["lp"] for results_emp in res_emp]
 
 fracs = [c, d, e, f, g, h]
-fraclabels = ["PTS", "ED", "Pyruvate kinase", "Lactate dehydrogenase", 
+fraclabels = ["PTS", "EMP", "Pyruvate kinase", "Lactate dehydrogenase",
               "ATP burning enzyme", "Lactate permease"]
 function plot_proteome(ax, x, fracs, fraclabels)
     d = cumsum(hcat(fracs...)'; dims=1)
@@ -85,16 +75,16 @@ f[1,2] = Legend(f, ax, "Protein",
                     unique=true,  framevisible = false)
 f
 
-FileIO.save(joinpath(imgpath, "Glu_ED_Enzymeband.pdf"), f)
+FileIO.save(joinpath(imgpath, "Glu_ EMP_Enzymeband.pdf"), f)
 
 ## Rates ##
 
-x = [results_ed["mu"] for results_ed in res_ed]
-i = [results_ed["v_pts"] for results_ed in res_ed]
-j = [results_ed["v_pyk"] for results_ed in res_ed]
-k = [results_ed["v_ldh"] for results_ed in res_ed]
-l = [results_ed["v_burn"] for results_ed in res_ed]
-m = [results_ed["v_lp"] for results_ed in res_ed]
+x = [results_emp["mu"] for results_emp in res_emp]
+i = [results_emp["v_pts"] for results_emp in res_emp]
+j = [results_emp["v_pyk"] for results_emp in res_emp]
+k = [results_emp["v_ldh"] for results_emp in res_emp]
+l = [results_emp["v_burn"] for results_emp in res_emp]
+m = [results_emp["v_lp"] for results_emp in res_emp]
 
 fig = Figure()
 ax = Axis(fig[1,1])
@@ -112,9 +102,9 @@ line5 =lines!(ax, x, m)
 ax.xlabel = "Biomass [1/h]"
 ax.ylabel = "Fluxes [mmol/gDW/h]"
 
-fig[1, 1] = Legend(fig, [[scatter1, line1], [scatter2, line2], [scatter3, line3], [scatter4, line4], [scatter5, line5]], 
+fig[1, 1] = Legend(fig, [[scatter1, line1], [scatter2, line2], [scatter3, line3], [scatter4, line4], [scatter5, line5]],
                          ["v_pts", "v_pyk", "v_ldh", "v_burn", "v_lp"],
     tellheight = false, tellwidth = false, halign = :left, valign = :bottom, labelsize = 14)
 fig
 
-FileIO.save(joinpath(imgpath, "Glu_ED_Rates.pdf"), fig)
+FileIO.save(joinpath(imgpath, "Glu_EMP_Rates.pdf"), fig)

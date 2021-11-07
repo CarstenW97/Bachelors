@@ -1,0 +1,76 @@
+
+\section{Factorization of rate equations}
+See \cite{noor2013note} for details. The flux of a reaction can be factorized into three
+conceptually distinct terms: kinetic ($F_K$), thermodynamic ($F_T$) and regulatory ($F_R$),
+as shown in Equation \ref{eq:flux_factorization}.
+\begin{equation}
+    v = F_K \times F_T \times F_R
+    \label{eq:flux_factorization}
+\end{equation}
+
+Assuming that saturation and regulation effects can be ignored, i.e. the enzyme is substrate
+saturated, and if $\Delta_r G' \leq 0$, the forward flux can be expressed as in Equation \ref{eq:thermokinetic_flux_forward}.
+\begin{equation}
+    v_\text{forward} \leq \underbrace{\text{kcat} \times E_i}_{F_K} \times \underbrace{\left(1 - \exp \left( \frac{\Delta_r G'}{RT} \right)\right)}_{F_T}
+    \label{eq:thermokinetic_flux_forward}
+\end{equation}
+
+Likewise, if $\Delta_r G' \geq 0$, the backward flux can be expressed as Equation \ref{eq:thermokinetic_flux_backward}.
+\begin{equation}
+    v_\text{backward} \leq -\underbrace{\text{kcat}' \times E_i}_{F_K} \times \underbrace{\left(\exp \left( \frac{-\Delta_r G'}{RT}\right) - 1\right)}_{F_T}
+    \label{eq:thermokinetic_flux_backward}
+\end{equation}
+
+Taken together, the flux of a reaction can be bounded by Equation \ref{eq:thermokinetic_flux_bound},
+with the $\min$ and $\max$ ensuring that the thermodynamic factors are well behaved.
+\begin{equation}
+    \text{kcat}' \times E_i \times \min{\left(0, \exp \left( \frac{-\Delta_r G'}{RT}\right) - 1\right)} \leq v \leq \text{kcat} \times E_i \times \max \left(0, 1 - \exp \left( \frac{\Delta_r G'}{RT} \right)\right)
+    \label{eq:thermokinetic_flux_bound}
+\end{equation}
+
+Assuming that the forward and reverse $\text{kcat}$'s are the same, and that flux is always
+at its boundary (parsimonious enzyme usage), Equation \ref{eq:thermokinetic_flux_bound} can be
+simplified to Equation \ref{eq:thermokinetic_flux_simplified}.
+\begin{equation}
+    v = \text{kcat} \times E_i \times \text{sign}\left(\Delta_r G' \right) \times \left(1 - \exp \left( \frac{-|\Delta_r G'|}{RT} \right)\right)
+    \label{eq:thermokinetic_flux_simplified}
+\end{equation}
+
+Furthermore, to avoid the usage of indicator variables in the subsequent optimization
+problems, the thermodynamic term will be approximated, as shown in Equation
+\ref{eq:thermokinetic_tanh_approximation}, where $p$ is a fitting variable.
+\begin{equation}
+    \tanh \left(p \cdot x \right) \approx  \text{sign}\left( x \right) \times \left(1 - \exp \left( x \right)\right)
+    \label{eq:thermokinetic_tanh_approximation}
+\end{equation}
+
+The fit is shown in Figure \ref{fig:tanh_approximation}.
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{imgs/tanh_approximation.pdf}
+    \caption{Fit of Equation \ref{eq:thermokinetic_tanh_approximation} where $p=-0.7$.}
+    \label{fig:tanh_approximation}
+\end{figure}
+
+\section{Thermokinetic algorithm}
+It is desirable to combine the MOMENT algorithm \cite{adadi2012prediction} with thermodynamic
+constraints, since such a formulation will necessarily be more physiologically representative
+of the underlying cellular metabolism. Equation \ref{eq:thermo_moment} shows this formulation,
+including the thermodynamic approximation of Equation \ref{eq:thermokinetic_tanh_approximation}.
+\begin{equation}
+\begin{aligned}
+& \underset{E, c, \Delta_r G^0}{\text{maximize}}
+& & c^T v \\
+& \text{subject to}
+& & S v = 0 \\
+& & & \Delta_r G_i = \Delta_r G_i^0 + R T \sum_j\nu_j\log\left(c_j \right) \\
+& & & v_i = \text{kcat}_i \times E_i \times \tanh \left(\frac{\Delta_r G_i}{RT} \right)\\
+& & & \sum_i E_i \leq \text{protein fraction}\\
+& & & c_{j, \text{LB}} \leq c_j \leq c_{j, \text{UB}}\\
+\end{aligned}
+\label{eq:thermo_moment}
+\end{equation}
+Where $c$, $v$, and $S$ retain their usual meaning from FBA, $E_i$ is the enzyme
+concentration of reaction $i$. When a constraint is indexed by $i$, it applies to each
+reaction in the model. Each reaction $i$ is also associated with a change in standard Gibbs free
+energy, $\Delta_r G_i^0$.
