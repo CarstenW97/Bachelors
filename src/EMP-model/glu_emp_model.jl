@@ -6,11 +6,11 @@ using KNITRO
     glc_ext_input = 0.05
     glu_emp = Model(optimizer_with_attributes(KNITRO.Optimizer,
         "ms_enable" => 1,
-        "ms_maxsolves" => 20))
+        "ms_maxsolves" => 10))
     # JuMP.set_silent(glu_emp)
 
     # Thermodynamic function
-    thermo_factor(x) = tanh(0.7 * x) # x = ΔrG/RT
+    thermo_factor(x) = tanh(-0.7 * x) # x = ΔrG/RT
     register(glu_emp, :thermo_factor, 1, thermo_factor; autodiff = true)
 
     # Bounds
@@ -118,7 +118,7 @@ using KNITRO
         total_proteome_mass_fraction == 0.26 # [g enz/gDW]
 
         # maintenance requirement
-        min_burn_flux == 0.001 # [mmol/gDW/h]
+        min_burn_flux == 1 # [mmol/gDW/h]
     end
 
     @NLconstraints glu_emp begin
@@ -168,9 +168,9 @@ using KNITRO
         min_burn_flux <= v_burn
 
         # measured ratio constraints (not strictly necessary)
-        # atp   == log(10)  + adp  # atp/adp = 10, but remember that the concentration variables are logged
-        # nadh  == log(0.2) + nad
-        # nadph == log(0.2) + nadp
+        atp   == log(10)  + adp  # atp/adp = 10, but remember that the concentration variables are logged
+        nadh  == log(0.2) + nad
+        nadph == log(0.2) + nadp
     end
 
     @objective(glu_emp, Max, mu)
