@@ -11,7 +11,7 @@ Step	Reaction	                                                                  
 7	    1,3-Bisphosphoglycerate4− + ADP3− → 3-Phosphoglycerate3− + ATP4−	                         2.7.2.3     −18.9	             329
 8	    3-Phosphoglycerate3− → 2-Phosphoglycerate3−	                                                 5.4.2.1       4.4	             -
 9	    2-Phosphoglycerate3− → Phosphoenolpyruvate3− + H2O	                                         4.2.1.11      1.8	             396  
-10	    Phosphoenolpyruvate3− + ADP3− + H+ → Pyruvate− + ATP4−	                                     2.7.1.40    −31.7	             - 
+10	    Phosphoenolpyruvate3− + ADP3− + H+ → Pyruvate− + ATP4−	                                     2.7.1.40    −31.7	             58.4 
 
 Steps 2 - 10: ΔG°' -35.87       kcat 126    SA 13.65
 Steps 2 -  9: ΔG°' - 4.71       kcat 126    SA 15.35
@@ -28,7 +28,7 @@ Step	Reaction	                                                                  
 6	    1,3-Bisphosphoglycerate4− + ADP3− → 3-Phosphoglycerate3− + ATP4−	                    2.7.2.3     −18.9	             329
 7	    3-Phosphoglycerate3− → 2-Phosphoglycerate3−	                                            5.4.2.1       4.4	             -
 8	    2-Phosphoglycerate3− → Phosphoenolpyruvate3− + H2O	                                    4.2.1.11      1.8	             396  
-9	    Phosphoenolpyruvate3− + ADP3− + H+ → Pyruvate− + ATP4−	                                2.7.1.40    −31.7	             - 
+9	    Phosphoenolpyruvate3− + ADP3− + H+ → Pyruvate− + ATP4−	                                2.7.1.40    −31.7	             58.4 
 
 Steps 2 -  9: ΔG°' -113.5       kcat 268    SA 56.57
 Steps 2 -  8: ΔG°' - 81.8       kcat 268    SA 64.65

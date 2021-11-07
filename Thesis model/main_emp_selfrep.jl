@@ -1,9 +1,9 @@
-include(joinpath("Thesis model", "glu_emp_model.jl"))
-import .Glu_EMP_Model
+include(joinpath("Thesis model", "glu_emp_selfrep_model.jl"))
+import .Glu_EMP_Selfrep_Model
 
-res_emp = []
+res_emp_selfrep = []
 for var in [0.0001:0.0005:0.005;]
-  push!(res_emp, Glu_EMP_Model.glu_emp_model(var))
+  push!(res_emp_selfrep, Glu_EMP_Selfrep_Model.glu_emp_selfrep_model(var))
 end
 
 ################################################################
@@ -16,10 +16,10 @@ using Statistics
 imgpath = joinpath("Thesis model", "Figures" , "EMP_Model")
 resultspath = joinpath("Thesis model", "Results", "EMP_Model")
 
-#CSV.write(joinpath(resultspath, "Results_EMP.csv"), res_emp[1])
+#CSV.write(joinpath(resultspath, "Results_EMP_Selfrep.csv"), res_emp[1])
 
-x = [results_emp["glc_ext"] for results_emp in res_emp]
-y = [results_emp["mu"] for results_emp in res_emp]
+x = [results_emp_selfrep["glc_ext"] for results_emp_selfrep in res_emp_selfrep]
+y = [results_emp_selfrep["mu"] for results_emp_selfrep in res_emp_selfrep]
 
 fig = Figure()
 ax = Axis(fig[1,1])
@@ -31,13 +31,13 @@ ax.ylabel = "Biomass [1/h]"
 
 fig
 
-FileIO.save(joinpath(imgpath, "Glu_EMP_Growth.pdf"), fig)
+FileIO.save(joinpath(imgpath, "Glu_EMP_Selfrep_Growth.pdf"), fig)
 
 ## ##
 
-x = [results_emp["mu"] for results_emp in res_emp]
-a = [results_emp["g6p"] for results_emp in res_emp]
-b = [results_emp["glu"] for results_emp in res_emp]
+x = [results_emp_selfrep["mu"]  for results_emp_selfrep in res_emp_selfrep]
+a = [results_emp_selfrep["g6p"] for results_emp_selfrep in res_emp_selfrep]
+b = [results_emp_selfrep["glu"] for results_emp_selfrep in res_emp_selfrep]
 
 fig = Figure()
 ax = Axis(fig[1,1])
@@ -53,17 +53,17 @@ fig[1, 1] = Legend(fig, [[scatter1, line1], [scatter2, line2]], ["Glucose-6-Phos
     tellheight = false, tellwidth = false, halign = :left, valign = :bottom, labelsize = 14)
 fig
 
-FileIO.save(joinpath(imgpath, "Glu_EMP_G6P+GLU.pdf"), fig) 
+FileIO.save(joinpath(imgpath, "Glu_EMP_G6P+GLU_Selfrep.pdf"), fig) 
 
 ## Enzyme concentration band plot ##
 
-x = [results_emp["mu"] for results_emp in res_emp]
-c = [results_emp["pts"] for results_emp in res_emp]
-d = [results_emp["emp"] for results_emp in res_emp]
-e = [results_emp["pyk"] for results_emp in res_emp]
-f = [results_emp["ldh"] for results_emp in res_emp]
-g = [results_emp["burn"] for results_emp in res_emp]
-h = [results_emp["lp"] for results_emp in res_emp]
+x = [results_emp_selfrep["mu"]   for results_emp_selfrep in res_emp_selfrep]
+c = [results_emp_selfrep["pts"]  for results_emp_selfrep in res_emp_selfrep]
+d = [results_emp_selfrep["emp"]  for results_emp_selfrep in res_emp_selfrep]
+e = [results_emp_selfrep["pyk"]  for results_emp_selfrep in res_emp_selfrep]
+f = [results_emp_selfrep["ldh"]  for results_emp_selfrep in res_emp_selfrep]
+g = [results_emp_selfrep["burn"] for results_emp_selfrep in res_emp_selfrep]
+h = [results_emp_selfrep["lp"]   for results_emp_selfrep in res_emp_selfrep]
 
 fracs = [c, d, e, f, g, h]
 fraclabels = ["PTS", "EMP", "Pyruvate kinase", "Lactate dehydrogenase", 
@@ -85,16 +85,16 @@ f[1,2] = Legend(f, ax, "Protein",
                     unique=true,  framevisible = false)
 f
 
-FileIO.save(joinpath(imgpath, "Glu_ EMP_Enzymeband.pdf"), f)
+FileIO.save(joinpath(imgpath, "Glu_EMP_Selfrep_Enzymeband.pdf"), f)
 
 ## Rates ##
 
-x = [results_emp["mu"] for results_emp in res_emp]
-i = [results_emp["v_pts"] for results_emp in res_emp]
-j = [results_emp["v_pyk"] for results_emp in res_emp]
-k = [results_emp["v_ldh"] for results_emp in res_emp]
-l = [results_emp["v_burn"] for results_emp in res_emp]
-m = [results_emp["v_lp"] for results_emp in res_emp]
+x = [results_emp_selfrep["mu"]     for results_em_selfrep in res_emp_selfrep]
+i = [results_emp_selfrep["v_pts"]  for results_em_selfrep in res_emp_selfrep]
+j = [results_emp_selfrep["v_pyk"]  for results_em_selfrep in res_emp_selfrep]
+k = [results_emp_selfrep["v_ldh"]  for results_em_selfrep in res_emp_selfrep]
+l = [results_emp_selfrep["v_burn"] for results_em_selfrep in res_emp_selfrep]
+m = [results_emp_selfrep["v_lp"]   for results_em_selfrep in res_emp_selfrep]
 
 fig = Figure()
 ax = Axis(fig[1,1])
@@ -117,4 +117,4 @@ fig[1, 1] = Legend(fig, [[scatter1, line1], [scatter2, line2], [scatter3, line3]
     tellheight = false, tellwidth = false, halign = :left, valign = :bottom, labelsize = 14)
 fig
 
-FileIO.save(joinpath(imgpath, "Glu_EMP_Rates.pdf"), fig)
+FileIO.save(joinpath(imgpath, "Glu_EMP_Selfrep_Rates.pdf"), fig)

@@ -1,24 +1,24 @@
-module Glu_ED_Model
+module Glu_ED_Selfrep_Model
 using JuMP
 using KNITRO
 
-function glu_ed_model(glc_ext_input)
+function glu_ed_selfrep_model(glc_ext_input)
     
-    glu_ed = Model(optimizer_with_attributes(KNITRO.Optimizer,
+    glu_ed_selfrep = Model(optimizer_with_attributes(KNITRO.Optimizer,
         "ms_enable" => 1,
         "opttol" => 1E-16,
         "opttolabs" => 1e-16,
         "honorbnds" => 1,
         "ms_maxsolves" => 10))
-    JuMP.set_silent(glu_ed)
+    JuMP.set_silent(glu_ed_selfrep)
 
     # Bounds
     k = 1e-6
 
     fmax(x) = (x + sqrt(k + x^2))/2                   # max(0, x) approximation
-    register(glu_ed, :fmax, 1, fmax; autodiff = true) 
+    register(glu_ed_selfrep, :fmax, 1, fmax; autodiff = true) 
     fmin(x) = -fmax(-x)                               # min(0, x) approximation
-    register(glu_ed, :fmin, 1, fmin; autodiff = true)
+    register(glu_ed_selfrep, :fmin, 1, fmin; autodiff = true)
 
     LB_enz =    0.0     # [g enz / g DW cell]
     UB_enz =    1.0     # [g enz / g DW cell]
@@ -29,13 +29,13 @@ function glu_ed_model(glc_ext_input)
     LB_dg  = -100       # [kJ/mol]
     UB_dg  =  100       # [kJ/mol]
 
-    @variables glu_ed begin
+    @variables glu_ed_selfrep begin
         # biomass [1/h] (g6p + ATP -> ADP)
         0 <= mu <= 10
 
         # Enzymes concentrations [g enz / g DW]
         LB_enz <= pts     <= UB_enz # enzyme for: glc external + ATP -> ADP + g6p
-        LB_enz <= ed      <= UB_enz # enzyme for: g6p + NAD + ADP + NADP -> NADH + ATP + NADPH + pep + pyr
+        LB_enz <= ed      <= UB_enz # enzyme for: g6p + 2NAD + 2ADP -> 2NADH + 2ATP + 2pep
         LB_enz <= pyk     <= UB_enz # enzyme for: pep + ADP -> ATP + pyr
         LB_enz <= ldh     <= UB_enz # enzyme for: pyr + NADH -> NAD + lac
         LB_enz <= ppc     <= UB_enz # enzyme for: pep + CO2 -> oac + P
@@ -44,6 +44,8 @@ function glu_ed_model(glc_ext_input)
         LB_enz <= burn    <= UB_enz # enzyme for: ATP -> ADP
         LB_enz <= nadtrdh <= UB_enz # enzyme for: NAD + NADPH -> NADH + NADP
         LB_enz <= lp      <= UB_enz # enzyme for: lac internal -> lac external
+
+        LB_enz <= ribo    <= UB_enz # ribosomes
 
         # Metabolite concentrations [log(M)]
         LB_met <= g6p   <= UB_met # glucose-6-phosphate 
@@ -76,6 +78,8 @@ function glu_ed_model(glc_ext_input)
         LB_v <= v_nadtrdh <= UB_v
         LB_v <= v_lp      <= UB_v
 
+        LB_v <= v_ribo    <= UB_v
+
         # Thermodynamic variables
         LB_dg <= dg_pts     <= UB_dg
         LB_dg <= dg_ed      <= UB_dg
@@ -87,9 +91,14 @@ function glu_ed_model(glc_ext_input)
         LB_dg <= dg_burn    <= UB_dg
         LB_dg <= dg_nadtrdh <= UB_dg
         LB_dg <= dg_lp      <= UB_dg
+                
+        LB_dg <= dg_ribo    <= UB_dg
+
+        # Ribosome fractions for synthesis
+        0 <= used_ribo[1:11] <= 1
     end
 
-    @NLparameters glu_ed begin
+    @NLparameters glu_ed_selfrep begin
         
         #R  == 8.3145e-3 # gas constants [kJ/K/mol]
         #T  == 298.15    # tempreature   [K]
@@ -108,6 +117,8 @@ function glu_ed_model(glc_ext_input)
         kcat_nadtrdh == 167.9
         kcat_lp      == 100
 
+        kcat_ribo    ==  80
+
         # Gibbs energy of reaction
         dG0_pts     == -16.7
         dG0_ed      == -81.8
@@ -120,6 +131,8 @@ function glu_ed_model(glc_ext_input)
         dG0_nadtrdh ==   0
         dG0_lp      == -10.3
 
+        dG0_ribo    == -20
+
         # media conditions
         glc_ext == log(glc_ext_input) # [log(50 mM)]
         lac_ext == log(10e-6) # [log(10 uM)]
@@ -131,7 +144,7 @@ function glu_ed_model(glc_ext_input)
         min_burn_flux == 1 # [mmol/gDW/h]
     end
 
-    @NLconstraints glu_ed begin
+    @NLconstraints glu_ed_selfrep begin
         # ΔG at concentrations
         dg_pts     == dG0_pts + RT * (adp + g6p - atp - glc_ext)
         dg_ed      == dG0_ed + RT * (nadph + nadh + atp + pep + pyr - adp -  nadp - nad - g6p)
@@ -144,6 +157,8 @@ function glu_ed_model(glc_ext_input)
         dg_nadtrdh == dG0_nadtrdh + RT * (nad + nadph - nadh - nadp)
         dg_lp      == dG0_lp + RT * (lac_ext - lac)
         
+        dg_ribo    == dG0_ribo + RT * (ribo - glu)
+
         # flux bounds due to kinetics and thermodynamics
         pts * kcat_pts * fmin(exp(-dg_pts/RT) - 1) <= v_pts
         ed * kcat_ed * fmin(exp(-dg_ed/RT) - 1) <= v_ed
@@ -156,6 +171,8 @@ function glu_ed_model(glc_ext_input)
         nadtrdh * kcat_nadtrdh * fmin(exp(-dg_nadtrdh/RT) - 1) <= v_nadtrdh
         lp * kcat_lp * fmin(exp(-dg_lp/RT) - 1) <= v_lp
         
+        ribo * kcat_ribo * fmin(exp(-dg_ribo/RT)-1)            <= v_ribo
+
         v_pts <= pts * kcat_pts * fmax(1 - exp(dg_pts/RT))
         v_ed <= ed * kcat_ed * fmax(1 - exp(dg_ed/RT))
         v_pyk <= pyk * kcat_pyk * fmax(1 - exp(dg_pyk/RT))
@@ -166,6 +183,23 @@ function glu_ed_model(glc_ext_input)
         v_burn <= burn * kcat_burn * fmax(1 - exp(dg_burn/RT))
         v_nadtrdh <= nadtrdh * kcat_nadtrdh * fmax(1 - exp(dg_nadtrdh/RT))
         v_lp <= lp * kcat_lp * fmax(1 - exp(dg_lp/RT))
+
+        v_ribo    <= ribo *kcat_ribo * fmax(1-exp(dg_ribo/RT))        
+        
+         # Ribosome fractions
+        sum(used_ribo[i] for i=1:11) == 1
+    
+        used_ribo[1]  * v_ribo - mu * pts     == 0
+        used_ribo[2]  * v_ribo - mu * ed     == 0
+        used_ribo[3]  * v_ribo - mu * pyk     == 0
+        used_ribo[4]  * v_ribo - mu * ldh     == 0
+        used_ribo[5]  * v_ribo - mu * ppc     == 0
+        used_ribo[6]  * v_ribo - mu * akgsyn  == 0
+        used_ribo[7]  * v_ribo - mu * gdhm    == 0
+        used_ribo[8]  * v_ribo - mu * burn    == 0
+        used_ribo[9]  * v_ribo - mu * nadtrdh == 0
+        used_ribo[10] * v_ribo - mu * lp      == 0
+        used_ribo[11] * v_ribo - mu * ribo    == 0
         
         # mass balance constraints
         v_pts - v_ed                                 ==  mu # g6p
@@ -174,7 +208,7 @@ function glu_ed_model(glc_ext_input)
         v_ldh - v_lp                                 ==  0  # lac
         v_ppc - v_akgsyn                             ==  0  # oac
         v_akgsyn - v_gdhm                            ==  0  # akg
-        v_gdhm                                       ==  0  # glu 
+        v_gdhm - v_ribo                                       ==  0  # glu 
         v_ed + v_pyk - v_pts - v_burn                ==  mu # atp
         v_pts + v_burn - v_ed - v_pyk                == -mu # adp
         v_ldh + v_gdhm - v_ed - v_nadtrdh - v_akgsyn ==  0  # nad
@@ -183,7 +217,7 @@ function glu_ed_model(glc_ext_input)
         v_ed + v_akgsyn + v_nadtrdh - v_gdhm         ==  0  # nadph
         
         # density constraint(s) (can add more, e.g. membrane)
-        pts + ed + pyk + ldh + ppc + akgsyn + gdhm + burn + nadtrdh + lp  <= total_proteome_mass_fraction
+        pts + ed + pyk + ldh + ppc + akgsyn + gdhm + burn + nadtrdh + lp + ribo <= total_proteome_mass_fraction
         
         # minimum maintenance
         min_burn_flux <= v_burn
@@ -194,11 +228,11 @@ function glu_ed_model(glc_ext_input)
         nadph == log(0.2) + nadp 
     end
 
-    @objective(glu_ed, Max, mu)
-    optimize!(glu_ed)
-    objective_value(glu_ed)
+    @objective(glu_ed_selfrep, Max, mu)
+    optimize!(glu_ed_selfrep)
+    objective_value(glu_ed_selfrep)
 
-    results_ed = Dict(
+    results_ed_selfrep = Dict(
         "mu"        => value(mu),
         "pts"       => value(pts),
         "ed"       => value(ed),
@@ -210,6 +244,7 @@ function glu_ed_model(glc_ext_input)
         "burn"      => value(burn),
         "nadtrdh"   => value(nadtrdh),
         "lp"        => value(lp),
+        "ribo"      => value(ribo),
         "glc_ext"   => value(glc_ext),
         "g6p"       => value(g6p),
         "pyr"       => value(pyr),
@@ -233,8 +268,9 @@ function glu_ed_model(glc_ext_input)
         "v_gdhm"    => value(v_gdhm),
         "v_burn"    => value(v_burn),
         "v_nadtrdh" => value(v_nadtrdh),
-        "v_lp"      => value(v_lp))
-    return results_ed
+        "v_lp"      => value(v_lp),
+        "v_ribo"    => value(v_ribo))
+    return results_ed_selfrep
 end     
 
 end #module

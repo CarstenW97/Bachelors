@@ -50,8 +50,6 @@ function mos_model(glc_ext)
         lb_met <= nad <= ub_met # NAD
         lb_met <= nadh <= ub_met # NADH
 
-        lb_met <= glc_ext <= ub_met
-
         # Fluxes [mmol/gDW/h]
         lb_v <= v_pts <= ub_v
         lb_v <= v_emp <= ub_v
@@ -71,7 +69,7 @@ function mos_model(glc_ext)
 
     @NLparameters model begin
         # media conditions
-        #glc_ext == log(50e-3) # [log(50 mM)]
+        glc_ext == log(50e-3) # [log(50 mM)]
         lac_ext == log(10e-6) # [log(10 uM)]
 
         # capacity constraint

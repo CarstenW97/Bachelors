@@ -99,7 +99,7 @@ function glu_emp_model(glc_ext_input)
         # Enzyme rates
         kcat_pts     == 213.75
         kcat_emp     == 126
-        kcat_pyk     == 126
+        kcat_pyk     ==  58.4
         kcat_ldh     ==  31
         kcat_ppc     == 540
         kcat_akgsyn  ==   4
