@@ -1,0 +1,48 @@
+\documentclass{report}
+\usepackage[utf8]{inputenc}
+\usepackage{geometry}
+\geometry{a4paper, total={170mm,257mm}, left=20mm, top=20mm} % more usable space
+\usepackage{hyperref}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{xcolor}
+\usepackage{graphicx}
+\usepackage{float}
+\usepackage{tcolorbox}
+\usepackage{enumitem}
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+
+\setlength{\parindent}{0em}
+\setlength{\parskip}{1em}
+
+\title{
+{Thesis Title}\\
+{\large Heinrich Heine University}\\
+{\includegraphics[width=0.3\textwidth]{imgs/hhu.pdf}}
+}
+\author{Carsten Wilke}
+\date{Submission date}
+
+\begin{document}
+
+\maketitle
+
+% front matter
+\chapter*{Abstract}
+Abstract goes here
+
+\chapter*{Acknowledgements}
+I want to thank...
+
+\tableofcontents
+
+% main matter
+\chapter{Background}
+\include{background.tex}
+
+% end matter
+\bibliographystyle{unsrt}
+\bibliography{papers}
+
+\end{document}
