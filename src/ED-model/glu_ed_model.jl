@@ -161,7 +161,7 @@ using KNITRO
         v_pts + v_burn - v_ed - v_pyk                == -mu # adp
         v_ldh + v_gdhm - v_ed - v_nadtrdh            ==  0  # nad
         v_ed + v_nadtrdh - v_ldh - v_gdhm            ==  0  # nadh
-        v_gdhm + v_nadtrdh - v_ed -                     ==  0  # nadp
+        v_gdhm + v_nadtrdh - v_ed                   ==  0  # nadp
         v_ed + v_nadtrdh                             ==  0  # nadph
 
         # density constraint(s) (can add more, e.g. membrane)
