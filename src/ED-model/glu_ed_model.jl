@@ -1,9 +1,9 @@
-# module Glu_ED_Model
+module Glu_ED_Model
 using JuMP
 using KNITRO
 
-# function glu_ed_model(glc_ext_input)
-    glc_ext_input = 0.05
+function glu_ed_model(glc_ext_input)
+    #glc_ext_input = 0.05
     glu_ed = Model(optimizer_with_attributes(KNITRO.Optimizer,
         "ms_enable" => 1,
         "ms_maxsolves" => 10))
@@ -34,10 +34,12 @@ using KNITRO
         LB_enz <= ldh     <= UB_enz # enzyme for: pyr + NADH -> NAD + lac
         LB_enz <= ppc     <= UB_enz # enzyme for: pep + CO2 -> oac + P
         LB_enz <= akgsyn  <= UB_enz # enzyme for: pyr + oac -> akg
-        LB_enz <= gdhm    <= UB_enz # enzyme for: akg + NH4 + NADH -> glu + NAD
+        LB_enz <= gdhm    <= UB_enz # enzyme for: akg + NH4 + NADPH -> glu + NADP
         LB_enz <= burn    <= UB_enz # enzyme for: ATP -> ADP
         LB_enz <= nadtrdh <= UB_enz # enzyme for: NAD + NADPH -> NADH + NADP
         LB_enz <= lp      <= UB_enz # enzyme for: lac internal -> lac external
+
+        # LB_enz <= sink    <= UB_enz # enzyme for: glu -> 
 
         # Metabolite concentrations [log(M)]
         LB_met <= g6p   <= UB_met # glucose-6-phosphate
@@ -53,9 +55,9 @@ using KNITRO
         LB_met <= nadh  <= UB_met # NADH
         LB_met <= nadp  <= UB_met # NADP
         LB_met <= nadph <= UB_met # NADPH
-        LB_met <= co2   <= UB_met
+        LB_met <= co2   <= UB_met # CO2
         LB_met <= phos  <= UB_met # phosphate
-        LB_met <= nh4   <= UB_met
+        LB_met <= nh4   <= UB_met # NH4
 
         # Fluxes [mmol/gDW/h]
         LB_v <= v_pts     <= UB_v
@@ -69,6 +71,8 @@ using KNITRO
         LB_v <= v_nadtrdh <= UB_v
         LB_v <= v_lp      <= UB_v
 
+        # LB_v <= v_sink    <= UB_v
+
         # Thermodynamic variables
         LB_dg <= dg_pts     <= UB_dg
         LB_dg <= dg_ed      <= UB_dg
@@ -80,14 +84,12 @@ using KNITRO
         LB_dg <= dg_burn    <= UB_dg
         LB_dg <= dg_nadtrdh <= UB_dg
         LB_dg <= dg_lp      <= UB_dg
+
+        # LB_dg <= dg_sink    <= UB_dg
     end
 
     @NLparameters glu_ed begin
-
-        #R  == 8.3145e-3 # gas constants [kJ/K/mol]
-        #T  == 298.15    # tempreature   [K]
-        #RT == R * T
-        RT == 8.3145e-3 * 298.15
+        RT == 8.3145e-3 * 298.15 # [kJ/mol]
 
         # Enzyme rates
         kcat_pts     == 213.75
@@ -101,6 +103,8 @@ using KNITRO
         kcat_nadtrdh == 167.9
         kcat_lp      == 100
 
+        # kcat_sink    == 100 # arbitrary number
+
         # Gibbs energy of reaction
         dG0_pts     == -16.7
         dG0_ed      == -81.8
@@ -110,8 +114,10 @@ using KNITRO
         dG0_akgsyn  == -60.7
         dG0_gdhm    == -33.4
         dG0_burn    == -57
-        dG0_nadtrdh ==   0
+        dG0_nadtrdh == - 1
         dG0_lp      == -10.3
+
+        # dG0_sink    == -20 # arbitrary number
 
         # media conditions
         glc_ext == log(glc_ext_input) # [log(50 mM)]
@@ -121,7 +127,8 @@ using KNITRO
         total_proteome_mass_fraction == 0.26 # [g enz/gDW]
 
         # maintenance requirement
-        min_burn_flux == 0.01 # [mmol/gDW/h]
+        min_burn_flux == 1 # [mmol/gDW/h]
+        # min_sink_flux == 1 
     end
 
     @NLconstraints glu_ed begin
@@ -130,12 +137,14 @@ using KNITRO
         dg_ed      == dG0_ed + RT * (nadph + nadh + atp + pep + pyr - adp -  nadp - nad - g6p)
         dg_pyk     == dG0_pyk + RT * (pyr + atp - adp - pep)
         dg_ldh     == dG0_ldh + RT * (lac + nad - nadh - pyr)
-        dg_ppc     == dG0_ppc + RT * (pep - oac)
-        dg_akgsyn  == dG0_akgsyn  + RT * (pyr + oac - akg)
-        dg_gdhm    == dG0_gdhm + RT * (akg + nadh - glu - nad)
+        dg_ppc     == dG0_ppc + RT * (pep + co2 - oac - phos)
+        dg_akgsyn  == dG0_akgsyn  + RT * (pyr + oac - akg - 2 * co2)
+        dg_gdhm    == dG0_gdhm + RT * (akg + nadh + nh4 - glu - nad)
         dg_burn    == dG0_burn + RT * (adp - atp)
         dg_nadtrdh == dG0_nadtrdh + RT * (nad + nadph - nadh - nadp)
         dg_lp      == dG0_lp + RT * (lac_ext - lac)
+
+        # dg_sink    == dG0_sink + RT * (- glu)
 
         # flux bounds due to kinetics and thermodynamics
         v_pts == pts * kcat_pts * thermo_factor(dg_pts/RT)
@@ -149,26 +158,29 @@ using KNITRO
         v_nadtrdh == nadtrdh * kcat_nadtrdh * thermo_factor(dg_nadtrdh/RT)
         v_lp == lp * kcat_lp * thermo_factor(dg_lp/RT)
 
+        # v_sink == sink * kcat_sink * thermo_factor(dg_sink/RT)
+
         # mass balance constraints
-        v_pts - v_ed                                 ==  mu # g6p
-        v_ed - v_pyk - v_ppc                         ==  0  # pep
-        v_ed + v_pyk - v_ldh - v_akgsyn              ==  0  # pyr
-        v_ldh - v_lp                                 ==  0  # lac
-        v_ppc - v_akgsyn                             ==  0  # oac
-        v_akgsyn - v_gdhm                            ==  0  # akg
-        v_gdhm                                       ==  0  # glu
-        v_ed + v_pyk - v_pts - v_burn                ==  mu # atp
-        v_pts + v_burn - v_ed - v_pyk                == -mu # adp
-        v_ldh + v_gdhm - v_ed - v_nadtrdh            ==  0  # nad
-        v_ed + v_nadtrdh - v_ldh - v_gdhm            ==  0  # nadh
-        v_gdhm + v_nadtrdh - v_ed                   ==  0  # nadp
-        v_ed + v_nadtrdh                             ==  0  # nadph
+        v_pts - v_ed                         ==  mu # g6p
+        v_ed - v_pyk - v_ppc                 ==  0  # pep
+        v_ed + v_pyk - v_ldh - v_akgsyn      ==  0  # pyr
+        v_ldh - v_lp                         ==  0  # lac
+        v_ppc - v_akgsyn                     ==  0  # oac
+        v_akgsyn - v_gdhm                    ==  0  # akg
+        v_gdhm                               ==  0  # glu      - v_sink
+        v_ed + v_pyk - v_pts - v_burn        ==  mu # atp
+        v_pts + v_burn - v_ed - v_pyk        == -mu # adp
+        v_ldh - v_ed - v_nadtrdh - v_akgsyn  ==  0  # nad
+        v_ed + v_nadtrdh + v_akgsyn - v_ldh  ==  0  # nadh
+        v_gdhm + v_nadtrdh - v_akgsyn - v_ed ==  0  # nadp
+        v_ed + v_akgsyn - v_nadtrdh - v_gdhm ==  0  # nadph
 
         # density constraint(s) (can add more, e.g. membrane)
         pts + ed + pyk + ldh + ppc + akgsyn + gdhm + burn + nadtrdh + lp  <= total_proteome_mass_fraction
 
         # minimum maintenance
         min_burn_flux <= v_burn
+        # min_sink_flux <= v_sink
 
         # measured ratio constraints (not strictly necessary)
         # atp   == log(10)  + adp  # atp/adp = 10, but remember that the concentration variables are logged
@@ -215,8 +227,10 @@ using KNITRO
         "v_gdhm"    => value(v_gdhm),
         "v_burn"    => value(v_burn),
         "v_nadtrdh" => value(v_nadtrdh),
-        "v_lp"      => value(v_lp))
-#     return results_ed
-# end
+        "v_lp"      => value(v_lp),
+        # "v_sink"    => value(v_sink),
+        )
+    return results_ed
+end
 
-# end #module
+end #module

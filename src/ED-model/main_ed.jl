@@ -1,4 +1,4 @@
-include(joinpath("Thesis model", "glu_ed_model.jl"))
+include(joinpath("Bachelors", "src", "ED-model", "glu_ed_model.jl"))
 import .Glu_ED_Model
 
 res_ed = []

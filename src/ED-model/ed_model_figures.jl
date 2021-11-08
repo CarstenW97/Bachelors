@@ -1,13 +1,10 @@
-
 using Colors, ColorSchemes
 using CairoMakie, FileIO
 using CSV, DataFrames
 using Statistics
 
-imgpath = joinpath("Thesis model", "Figures" , "ED_Model")
-resultspath = joinpath("Thesis model", "Results", "ED_Model")
-
-#CSV.write(joinpath(resultspath, "Results_ED.csv"), res_ed[1])
+imgpath = joinpath("Bachelors", "data", "figures", "ED-model")
+resultspath = joinpath("Bachelors", "data", "results", "ED-model")
 
 x = [results_ed["glc_ext"] for results_ed in res_ed]
 y = [results_ed["mu"] for results_ed in res_ed]

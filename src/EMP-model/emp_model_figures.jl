@@ -3,10 +3,8 @@ using CairoMakie, FileIO
 using CSV, DataFrames
 using Statistics
 
-imgpath = joinpath("Thesis model", "Figures" , "EMP_Model")
-resultspath = joinpath("Thesis model", "Results", "EMP_Model")
-
-#CSV.write(joinpath(resultspath, "Results_EMP.csv"), res_emp[1])
+imgpath = joinpath("Bachelors", "data", "figures", "EMP-model")
+resultspath = joinpath("Bachelors", "data", "results", "EMP-model")
 
 x = [results_emp["glc_ext"] for results_emp in res_emp]
 y = [results_emp["mu"] for results_emp in res_emp]
