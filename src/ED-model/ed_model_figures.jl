@@ -3,8 +3,8 @@ using CairoMakie, FileIO
 using CSV, DataFrames
 using Statistics
 
-imgpath = joinpath("Bachelors", "docs", "imgs", "ED-model")
-resultspath = joinpath("Bachelors", "docs", "results", "ED-model")
+imgpath = joinpath("docs", "imgs", "ED-model")
+resultspath = joinpath("docs", "results", "ED-model")
 
 x = [results_ed["glc_ext"] for results_ed in res_ed]
 y = [results_ed["mu"] for results_ed in res_ed]

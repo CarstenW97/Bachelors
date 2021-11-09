@@ -14,14 +14,14 @@ function glu_ed_model(glc_ext_input)
     register(glu_ed, :thermo_factor, 1, thermo_factor; autodiff = true)
 
     # Bounds
-    LB_enz =    0.0     # [g enz / g DW cell]
-    UB_enz =    1.0     # [g enz / g DW cell]
-    LB_met = log(1e-6)  # [log(1 uM)]
-    UB_met = log(10e-3) # [log(10 mM)]
-    LB_v   = - 50       # [mmol/gDW/h]
-    UB_v   =   50       # [mmol/gDW/h]
-    LB_dg  = -100       # [kJ/mol]
-    UB_dg  =  100       # [kJ/mol]
+    LB_enz =    0.0      # [g enz / g DW cell]
+    UB_enz =    1.0      # [g enz / g DW cell]
+    LB_met = log(1e-6)   # [log(1 uM)]
+    UB_met = log(100e-3) # [log(100 mM)]
+    LB_v   = - 50        # [mmol/gDW/h]
+    UB_v   =   50        # [mmol/gDW/h]
+    LB_dg  = -100        # [kJ/mol]
+    UB_dg  =  100        # [kJ/mol]
 
     @variables glu_ed begin
         # biomass [1/h] (g6p + ATP -> ADP)
@@ -39,6 +39,7 @@ function glu_ed_model(glc_ext_input)
         LB_enz <= nadtrdh <= UB_enz # enzyme for: NAD + NADPH -> NADH + NADP
         LB_enz <= lp      <= UB_enz # enzyme for: lac internal -> lac external
         LB_enz <= glnsyn  <= UB_enz # enzyme for: glu + ATP + NH3 -> gln + ADP 
+        LB_enz <= sink    <= UB_enz # enzyme for: gln ->
 
         # Metabolite concentrations [log(M)]
         LB_met <= g6p   <= UB_met # glucose-6-phosphate
@@ -71,6 +72,7 @@ function glu_ed_model(glc_ext_input)
         LB_v <= v_nadtrdh <= UB_v
         LB_v <= v_lp      <= UB_v
         LB_v <= v_glnsyn  <= UB_v
+        LB_v <= v_sink    <= UB_v
 
         # Thermodynamic variables
         LB_dg <= dg_pts     <= UB_dg
@@ -84,6 +86,7 @@ function glu_ed_model(glc_ext_input)
         LB_dg <= dg_nadtrdh <= UB_dg
         LB_dg <= dg_lp      <= UB_dg
         LB_dg <= dg_glnsyn  <= UB_dg
+        LB_dg <= dg_sink    <= UB_dg
     end
 
     @NLparameters glu_ed begin
@@ -101,6 +104,7 @@ function glu_ed_model(glc_ext_input)
         kcat_nadtrdh == 167.9
         kcat_lp      == 100
         kcat_glnsyn  == 35
+        kcat_sink    == 50 # arbitrary for now
 
         # Gibbs energy of reaction
         dG0_pts     == -16.7
@@ -114,6 +118,7 @@ function glu_ed_model(glc_ext_input)
         dG0_nadtrdh == - 1
         dG0_lp      == -10.3
         dG0_glnsyn  == -15.3
+        dG0_sink    == -10   # arbitrary for now
 
         # media conditions
         glc_ext == log(glc_ext_input) # [log(50 mM)]
@@ -124,6 +129,7 @@ function glu_ed_model(glc_ext_input)
 
         # maintenance requirement
         min_burn_flux == 1 # [mmol/gDW/h]
+        min_sink_fulx == 1
     end
 
     @NLconstraints glu_ed begin
@@ -139,6 +145,7 @@ function glu_ed_model(glc_ext_input)
         dg_nadtrdh == dG0_nadtrdh + RT * (nad + nadph - nadh - nadp)
         dg_lp      == dG0_lp + RT * (lac_ext - lac)
         dg_glnsyn  == dG0_glnsyn + RT * (gln + adp - glu - atp - nh3)
+        dg_sink    == dG0_sink + RT * (- gln)
 
         # flux bounds due to kinetics and thermodynamics
         v_pts == pts * kcat_pts * thermo_factor(dg_pts/RT)
@@ -152,6 +159,7 @@ function glu_ed_model(glc_ext_input)
         v_nadtrdh == nadtrdh * kcat_nadtrdh * thermo_factor(dg_nadtrdh/RT)
         v_lp == lp * kcat_lp * thermo_factor(dg_lp/RT)
         v_glnsyn == glnsyn * kcat_glnsyn * thermo_factor(dg_glnsyn/RT)
+        v_sink == sink * kcat_sink * thermo_factor(dg_sink/RT)
 
         # mass balance constraints
         v_pts - v_ed                             ==  mu # g6p
@@ -161,7 +169,7 @@ function glu_ed_model(glc_ext_input)
         v_ppc - v_akgsyn                         ==  0  # oac
         v_akgsyn - v_gdhm                        ==  0  # akg
         v_gdhm - v_glnsyn                        ==  0  # glu
-        v_glnsyn                                 ==  0  # gln
+        v_glnsyn - v_sink                        ==  0  # gln
         v_ed + v_pyk - v_pts - v_burn - v_glnsyn ==  mu # atp
         v_pts + v_burn + v_glnsyn - v_ed - v_pyk == -mu # adp
         v_ldh - v_ed - v_nadtrdh - v_akgsyn      ==  0  # nad
@@ -170,10 +178,11 @@ function glu_ed_model(glc_ext_input)
         v_ed + v_akgsyn - v_nadtrdh - v_gdhm     ==  0  # nadph
 
         # density constraint(s) (can add more, e.g. membrane)
-        pts + ed + pyk + ldh + ppc + akgsyn + gdhm + burn + nadtrdh + lp + glnsyn  <= total_proteome_mass_fraction
+        pts + ed + pyk + ldh + ppc + akgsyn + gdhm + burn + nadtrdh + lp + glnsyn + sink <= total_proteome_mass_fraction
 
         # minimum maintenance
         min_burn_flux <= v_burn
+        min_sink_flux <= v_sink
 
         # measured ratio constraints (not strictly necessary)
         # atp   == log(10)  + adp  # atp/adp = 10, but remember that the concentration variables are logged
@@ -181,14 +190,14 @@ function glu_ed_model(glc_ext_input)
         # nadph == log(0.2) + nadp
     end
 
-    @objective(glu_ed, Max, mu)
+    @objective(glu_ed, Max, gln)
     optimize!(glu_ed)
     objective_value(glu_ed)
 
     results_ed = Dict(
         "mu"        => value(mu),
         "pts"       => value(pts),
-        "ed"       => value(ed),
+        "ed"        => value(ed),
         "pyk"       => value(pyk),
         "ldh"       => value(ldh),
         "ppc"       => value(ppc),
@@ -221,7 +230,8 @@ function glu_ed_model(glc_ext_input)
         "v_burn"    => value(v_burn),
         "v_nadtrdh" => value(v_nadtrdh),
         "v_lp"      => value(v_lp),
-        "v_glnsyn"    => value(v_glnsyn),
+        "v_glnsyn"  => value(v_glnsyn),
+        "v_sink"    => value(v_sink),
         )
     return results_ed
 end
