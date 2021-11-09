@@ -1,3 +1,6 @@
+
+Most of these values were used to test the models.
+
 ## EMP ##
 Change in free energy for each step of glycolysis (https://en.wikipedia.org/wiki/Glycolysis)
 
@@ -36,12 +39,12 @@ Steps 2 -  8: ΔG°' - 81.8       kcat 268    SA 64.65
 
 ## Glutamate synthesis ## 
 
-Step	Reaction	                                                                                                                    EC          ΔG°' / (kJ/mol)     kcat (1/s)  MW (KDa)            SA (µmol/min/mg)
-1 EMP   Glucose-6-phosphate + ADP → Phosphoenolpyruvate + ATP       (2 PEP in total)	                                                             - 4.71              126                            15.35
-1 ED    Glucose-6-phosphate + ADP → Phosphoenolpyruvate + ATP       (1 PEP in total)	                                                             -81.8               268                            64.65
-2       H2O(l) + CO2(aq) + Phosphoenolpyruvate(aq) ⇌ Orthophosphate(aq) + Oxaloacetate(aq)                                              4.1.1.31     -40.3               540        93    93 mg/umol    348.39
-3       Pyruvate(aq) + Oxaloacetate(aq) + NAD(aq) + NADP(aq) + H2O(l) ⇌ alpha-Ketoglutarate(aq) + 2 CO2(aq) + NADH(aq) + NADPH(aq)                   -60.7                 4        94    94 mg/umol      0.51
-4       alpha-Ketoglutarate(aq) + NH3(aq) + NADPH(aq) ⇌ Glutamate(aq) + NADP(aq) + H2O(l)                                               1.4.1.13     -33.4                20       135   135 mg/umol      8.89      
+Step	Reaction	                                                                                                                    EC          ΔG°' / (kJ/mol)     kcat (1/s)                                      MW (KDa)            SA (µmol/min/mg)
+1 EMP   Glucose-6-phosphate + ADP → Phosphoenolpyruvate + ATP       (2 PEP in total)	                                                             - 4.71              126                                                15.35
+1 ED    Glucose-6-phosphate + ADP → Phosphoenolpyruvate + ATP       (1 PEP in total)	                                                             -81.8               268                                                64.65
+2       H2O(l) + CO2(aq) + Phosphoenolpyruvate(aq) ⇌ Orthophosphate(aq) + Oxaloacetate(aq)                                              4.1.1.31     -40.3               540                                                93    93 mg/umol    348.39
+3       Pyruvate(aq) + Oxaloacetate(aq) + NAD(aq) + NADP(aq) + H2O(l) ⇌ alpha-Ketoglutarate(aq) + 2 CO2(aq) + NADH(aq) + NADPH(aq)                   -60.7                 4                                                94    94 mg/umol      0.51
+4       alpha-Ketoglutarate(aq) + NH3(aq) + NADPH(aq) ⇌ Glutamate(aq) + NADP(aq) + H2O(l)                                               1.4.1.2      -33.4                342 (Bacillus subtilis, P39633, wild-type)       135   135 mg/umol      8.89      
 
 
 ## NAD recovery ##
@@ -57,11 +60,11 @@ Lac Exporter (permease)
 
 ## Upkeep ##
 Step	Reaction	                        ΔG°' / (kJ/mol)    kcat (1/s)    MW (KDa)                     SA (µmol/min/mg)      EC 
-1       ATP + H2O → ADP + Pi                -57                 10             78          78 mg/umol     33.3
+1       ATP + H2O → ADP + Pi                -29.6                 22             78          78 mg/umol     33.3                7.2.2.14    
 
 2        nad + nadph ⇌ nadh + nadp           0                 167.9          51.5         51.5 mg/umol   195.6
 
-3       Glu + ATP + NH3 -> Gln + ADP + Pi   -15.3               35                                                              6.3.1.2
+3       Glu + ATP + NH3 -> Gln + ADP + Pi   -15.3               33                                                               6.3.1.2
 
 
 g6p   # glucose-6-phosphate 
@@ -88,3 +91,16 @@ burn     # enzyme for: ATP -> ADP
 nadtrdh  # enzyme for: NAD + NADPH -> NADH + NADP
 lp       # enzyme for: lac internal -> lac external
 glnsyn   # enzyme for: glu + ATP + NH3 -> gln + ADP
+
+
+
+Values from spreadsheet:  pnas_heckmann_2020
+
+G6PDH2r     163.678729835396
+PFK         278
+FBA         103.561878025645
+TPI         193.906572544439
+G3PD2       108.588027779767
+PGK          16.0100104283114   #### LIMITING ####
+PGM         189.368885346935
+ENO          58.1848761721395

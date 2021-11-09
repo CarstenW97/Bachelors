@@ -93,30 +93,30 @@ function glu_ed_model(glc_ext_input)
         RT == 8.3145e-3 * 298.15 # [kJ/mol]
 
         # Enzyme rates
-        kcat_pts     == 213.75
-        kcat_ed      == 268
-        kcat_pyk     ==  58.4
-        kcat_ldh     ==  31
-        kcat_ppc     == 540
-        kcat_akgsyn  ==   4
-        kcat_gdhm    ==  20
-        kcat_burn    ==  10
-        kcat_nadtrdh == 167.9
-        kcat_lp      == 100
-        kcat_glnsyn  == 35
-        kcat_sink    == 50 # arbitrary for now
+        kcat_pts     == 213.75              
+        kcat_ed      ==  16.0100104283114   
+        kcat_pyk     == 117.269621287688     
+        kcat_ldh     ==   8.65643947924285  
+        kcat_ppc     ==  46                 
+        kcat_akgsyn  ==   4 #               
+        kcat_gdhm    == 342                 
+        kcat_burn    ==  22                 
+        kcat_nadtrdh ==  51.9313402919591   
+        kcat_lp      == 100 #
+        kcat_glnsyn  ==  33                 
+        kcat_sink    ==  50 # arbitrary for now
 
         # Gibbs energy of reaction
         dG0_pts     == -16.7
-        dG0_ed      == -81.8
+        dG0_ed      == - 4.71
         dG0_pyk     == -31.7
         dG0_ldh     == -23.7
         dG0_ppc     == -40.3
-        dG0_akgsyn  == -60.7
+        dG0_akgsyn  == -60.7 
         dG0_gdhm    == -33.4
-        dG0_burn    == -57
-        dG0_nadtrdh == - 1
-        dG0_lp      == -10.3
+        dG0_burn    == -29.6
+        dG0_nadtrdh ==   0
+        dG0_lp      == -10.3 
         dG0_glnsyn  == -15.3
         dG0_sink    == -10   # arbitrary for now
 
