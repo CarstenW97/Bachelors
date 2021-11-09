@@ -56,10 +56,12 @@ CO2 Exporter (passive diffusion)
 Lac Exporter (permease)
 
 ## Upkeep ##
-Step	Reaction	                ΔG°' / (kJ/mol)    kcat (1/s)    MW (KDa)                     SA (µmol/min/mg)
-1       ATP + H2O → ADP + Pi        -57                 10             78          78 mg/umol     33.3
+Step	Reaction	                        ΔG°' / (kJ/mol)    kcat (1/s)    MW (KDa)                     SA (µmol/min/mg)      EC 
+1       ATP + H2O → ADP + Pi                -57                 10             78          78 mg/umol     33.3
 
-2        nad + nadph ⇌ nadh + nadp   0                 167.9          51.5         51.5 mg/umol   195.6
+2        nad + nadph ⇌ nadh + nadp           0                 167.9          51.5         51.5 mg/umol   195.6
+
+3       Glu + ATP + NH3 -> Gln + ADP + Pi   -15.3               35                                                              6.3.1.2
 
 
 g6p   # glucose-6-phosphate 
@@ -85,3 +87,4 @@ gdhm     # enzyme for: akg + NH4 + NADPH -> glu + NADP
 burn     # enzyme for: ATP -> ADP
 nadtrdh  # enzyme for: NAD + NADPH -> NADH + NADP
 lp       # enzyme for: lac internal -> lac external
+glnsyn   # enzyme for: glu + ATP + NH3 -> gln + ADP

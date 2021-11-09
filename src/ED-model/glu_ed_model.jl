@@ -34,12 +34,11 @@ function glu_ed_model(glc_ext_input)
         LB_enz <= ldh     <= UB_enz # enzyme for: pyr + NADH -> NAD + lac
         LB_enz <= ppc     <= UB_enz # enzyme for: pep + CO2 -> oac + P
         LB_enz <= akgsyn  <= UB_enz # enzyme for: pyr + oac -> akg
-        LB_enz <= gdhm    <= UB_enz # enzyme for: akg + NH4 + NADPH -> glu + NADP
+        LB_enz <= gdhm    <= UB_enz # enzyme for: akg + NH3 + NADPH -> glu + NADP
         LB_enz <= burn    <= UB_enz # enzyme for: ATP -> ADP
         LB_enz <= nadtrdh <= UB_enz # enzyme for: NAD + NADPH -> NADH + NADP
         LB_enz <= lp      <= UB_enz # enzyme for: lac internal -> lac external
-
-        # LB_enz <= sink    <= UB_enz # enzyme for: glu -> 
+        LB_enz <= glnsyn  <= UB_enz # enzyme for: glu + ATP + NH3 -> gln + ADP 
 
         # Metabolite concentrations [log(M)]
         LB_met <= g6p   <= UB_met # glucose-6-phosphate
@@ -48,6 +47,7 @@ function glu_ed_model(glc_ext_input)
         LB_met <= oac   <= UB_met # oxalacetate
         LB_met <= akg   <= UB_met # alpha-ketogluterate
         LB_met <= glu   <= UB_met # glutamate
+        LB_met <= gln   <= UB_met # glutamine
         LB_met <= lac   <= UB_met # lactate
         LB_met <= atp   <= UB_met # ATP
         LB_met <= adp   <= UB_met # ADP
@@ -57,7 +57,7 @@ function glu_ed_model(glc_ext_input)
         LB_met <= nadph <= UB_met # NADPH
         LB_met <= co2   <= UB_met # CO2
         LB_met <= phos  <= UB_met # phosphate
-        LB_met <= nh4   <= UB_met # NH4
+        LB_met <= nh3   <= UB_met # NH3
 
         # Fluxes [mmol/gDW/h]
         LB_v <= v_pts     <= UB_v
@@ -70,8 +70,7 @@ function glu_ed_model(glc_ext_input)
         LB_v <= v_burn    <= UB_v
         LB_v <= v_nadtrdh <= UB_v
         LB_v <= v_lp      <= UB_v
-
-        # LB_v <= v_sink    <= UB_v
+        LB_v <= v_glnsyn  <= UB_v
 
         # Thermodynamic variables
         LB_dg <= dg_pts     <= UB_dg
@@ -84,8 +83,7 @@ function glu_ed_model(glc_ext_input)
         LB_dg <= dg_burn    <= UB_dg
         LB_dg <= dg_nadtrdh <= UB_dg
         LB_dg <= dg_lp      <= UB_dg
-
-        # LB_dg <= dg_sink    <= UB_dg
+        LB_dg <= dg_glnsyn  <= UB_dg
     end
 
     @NLparameters glu_ed begin
@@ -102,8 +100,7 @@ function glu_ed_model(glc_ext_input)
         kcat_burn    ==  10
         kcat_nadtrdh == 167.9
         kcat_lp      == 100
-
-        # kcat_sink    == 100 # arbitrary number
+        kcat_glnsyn  == 35
 
         # Gibbs energy of reaction
         dG0_pts     == -16.7
@@ -116,8 +113,7 @@ function glu_ed_model(glc_ext_input)
         dG0_burn    == -57
         dG0_nadtrdh == - 1
         dG0_lp      == -10.3
-
-        # dG0_sink    == -20 # arbitrary number
+        dG0_glnsyn  == -15.3
 
         # media conditions
         glc_ext == log(glc_ext_input) # [log(50 mM)]
@@ -128,7 +124,6 @@ function glu_ed_model(glc_ext_input)
 
         # maintenance requirement
         min_burn_flux == 1 # [mmol/gDW/h]
-        # min_sink_flux == 1 
     end
 
     @NLconstraints glu_ed begin
@@ -139,12 +134,11 @@ function glu_ed_model(glc_ext_input)
         dg_ldh     == dG0_ldh + RT * (lac + nad - nadh - pyr)
         dg_ppc     == dG0_ppc + RT * (pep + co2 - oac - phos)
         dg_akgsyn  == dG0_akgsyn  + RT * (pyr + oac - akg - 2 * co2)
-        dg_gdhm    == dG0_gdhm + RT * (akg + nadh + nh4 - glu - nad)
+        dg_gdhm    == dG0_gdhm + RT * (akg + nadh + nh3 - glu - nad)
         dg_burn    == dG0_burn + RT * (adp - atp)
         dg_nadtrdh == dG0_nadtrdh + RT * (nad + nadph - nadh - nadp)
         dg_lp      == dG0_lp + RT * (lac_ext - lac)
-
-        # dg_sink    == dG0_sink + RT * (- glu)
+        dg_glnsyn  == dG0_glnsyn + RT * (gln + adp - glu - atp - nh3)
 
         # flux bounds due to kinetics and thermodynamics
         v_pts == pts * kcat_pts * thermo_factor(dg_pts/RT)
@@ -157,30 +151,29 @@ function glu_ed_model(glc_ext_input)
         v_burn == burn * kcat_burn * thermo_factor(dg_burn/RT)
         v_nadtrdh == nadtrdh * kcat_nadtrdh * thermo_factor(dg_nadtrdh/RT)
         v_lp == lp * kcat_lp * thermo_factor(dg_lp/RT)
-
-        # v_sink == sink * kcat_sink * thermo_factor(dg_sink/RT)
+        v_glnsyn == glnsyn * kcat_glnsyn * thermo_factor(dg_glnsyn/RT)
 
         # mass balance constraints
-        v_pts - v_ed                         ==  mu # g6p
-        v_ed - v_pyk - v_ppc                 ==  0  # pep
-        v_ed + v_pyk - v_ldh - v_akgsyn      ==  0  # pyr
-        v_ldh - v_lp                         ==  0  # lac
-        v_ppc - v_akgsyn                     ==  0  # oac
-        v_akgsyn - v_gdhm                    ==  0  # akg
-        v_gdhm                               ==  0  # glu      - v_sink
-        v_ed + v_pyk - v_pts - v_burn        ==  mu # atp
-        v_pts + v_burn - v_ed - v_pyk        == -mu # adp
-        v_ldh - v_ed - v_nadtrdh - v_akgsyn  ==  0  # nad
-        v_ed + v_nadtrdh + v_akgsyn - v_ldh  ==  0  # nadh
-        v_gdhm + v_nadtrdh - v_akgsyn - v_ed ==  0  # nadp
-        v_ed + v_akgsyn - v_nadtrdh - v_gdhm ==  0  # nadph
+        v_pts - v_ed                             ==  mu # g6p
+        v_ed - v_pyk - v_ppc                     ==  0  # pep
+        v_ed + v_pyk - v_ldh - v_akgsyn          ==  0  # pyr
+        v_ldh - v_lp                             ==  0  # lac
+        v_ppc - v_akgsyn                         ==  0  # oac
+        v_akgsyn - v_gdhm                        ==  0  # akg
+        v_gdhm - v_glnsyn                        ==  0  # glu
+        v_glnsyn                                 ==  0  # gln
+        v_ed + v_pyk - v_pts - v_burn - v_glnsyn ==  mu # atp
+        v_pts + v_burn + v_glnsyn - v_ed - v_pyk == -mu # adp
+        v_ldh - v_ed - v_nadtrdh - v_akgsyn      ==  0  # nad
+        v_ed + v_nadtrdh + v_akgsyn - v_ldh      ==  0  # nadh
+        v_gdhm + v_nadtrdh - v_akgsyn - v_ed     ==  0  # nadp
+        v_ed + v_akgsyn - v_nadtrdh - v_gdhm     ==  0  # nadph
 
         # density constraint(s) (can add more, e.g. membrane)
-        pts + ed + pyk + ldh + ppc + akgsyn + gdhm + burn + nadtrdh + lp  <= total_proteome_mass_fraction
+        pts + ed + pyk + ldh + ppc + akgsyn + gdhm + burn + nadtrdh + lp + glnsyn  <= total_proteome_mass_fraction
 
         # minimum maintenance
         min_burn_flux <= v_burn
-        # min_sink_flux <= v_sink
 
         # measured ratio constraints (not strictly necessary)
         # atp   == log(10)  + adp  # atp/adp = 10, but remember that the concentration variables are logged
@@ -228,7 +221,7 @@ function glu_ed_model(glc_ext_input)
         "v_burn"    => value(v_burn),
         "v_nadtrdh" => value(v_nadtrdh),
         "v_lp"      => value(v_lp),
-        # "v_sink"    => value(v_sink),
+        "v_glnsyn"    => value(v_glnsyn),
         )
     return results_ed
 end
