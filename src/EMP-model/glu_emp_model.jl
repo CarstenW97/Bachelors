@@ -98,11 +98,11 @@ function glu_emp_model(glc_ext_input)
         kcat_pyk     == 117.269621287688     
         kcat_ldh     ==   8.65643947924285  
         kcat_ppc     ==  46                 
-        kcat_akgsyn  ==   4 #               
+        kcat_akgsyn  ==   4                
         kcat_gdhm    == 342                 
         kcat_burn    ==  22                 
         kcat_nadtrdh ==  51.9313402919591   
-        kcat_lp      == 100 #
+        kcat_lp      == 100 
         kcat_glnsyn  ==  33                 
         kcat_sink    ==  50 # arbitrary for now
 
