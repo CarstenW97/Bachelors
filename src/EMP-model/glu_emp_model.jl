@@ -6,8 +6,8 @@ function glu_emp_model(glc_ext_input)
     #glc_ext_input = 0.05
     glu_emp = Model(optimizer_with_attributes(KNITRO.Optimizer,
         "ms_enable" => 1,
-        "ms_maxsolves" => 10))
-    # JuMP.set_silent(glu_emp)
+        "ms_maxsolves" => 200))
+    #JuMP.set_silent(glu_emp)
 
     # Thermodynamic function
     thermo_factor(x) = tanh(-0.7 * x) # x = ΔrG/RT
