@@ -94,7 +94,7 @@ function glu_emp_model(glc_ext_input)
         RT == 8.3145e-3 * 298.15 # [kJ/mol]
 
         # Enzyme rates
-        kcat_pts      == 213.75
+        kcat_pts      == 65
         kcat_emp      ==  16.0100104283114
         kcat_pyk      == 117.269621287688
         kcat_ldh      ==   8.65643947924285
@@ -103,7 +103,7 @@ function glu_emp_model(glc_ext_input)
         kcat_gdhm     == 342
         kcat_burn     ==  22
         kcat_nadtrdh  ==  51.9313402919591
-        kcat_lp       == 100
+        kcat_lp       == 65
         kcat_glnsyn   ==  33
         kcat_co2_diff == 65
         kcat_nh3_diff == 65
@@ -111,29 +111,29 @@ function glu_emp_model(glc_ext_input)
         # Gibbs energy of reaction
         dG0_pts      == -16.7
         dG0_emp      == - 4.71
-        dG0_pyk      == -31.7
+        dG0_pyk      == -25.0
         dG0_ldh      == -23.7
-        dG0_ppc      == -40.3
+        dG0_ppc      == -32.2
         dG0_akgsyn   == -60.7
         dG0_gdhm     == -33.4
         dG0_burn     == -29.6
         dG0_nadtrdh  == 0
-        dG0_lp       == -10.3
+        dG0_lp       == 5
         dG0_glnsyn   == -15.3
         dG0_nh3_diff == 0
         dG0_co2_diff == 0
 
         # media conditions
-        glc_ext == log(glc_ext_input) # [log(50 mM)]
-        lac_ext == log(10e-6) # [log(10 uM)]
-        co2_ext == log(10e-6) # [log(10 uM)]
-        nh3_ext == log(50e-3) # [log[50mM]]
+        glc_ext == log(glc_ext_input) # [log(M)]
+        lac_ext == log(10e-3) # [log(M)]
+        co2_ext == log(1e-4) # [log(M)]
+        nh3_ext == log(5e-3) # [log[M]]
 
         # intracellular conditions
         phos == log(1e-3) # [log[1mM]]
         # set nadph/nadp ≈ 3
         nadph == log(3e-3)
-        nadp == log(1e-1)
+        nadp == log(1e-3)
 
         # capacity constraint
         total_proteome_mass_fraction == 0.1 # [g enz/gDW]
