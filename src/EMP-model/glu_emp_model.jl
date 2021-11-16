@@ -7,7 +7,7 @@ function glu_emp_model(glc_ext_input)
     glu_emp = Model(optimizer_with_attributes(KNITRO.Optimizer,
         "ms_enable" => 1,
         "ms_maxsolves" => 50))
-    #JuMP.set_silent(glu_emp)
+    JuMP.set_silent(glu_emp)
 
     # Thermodynamic function
     thermo_factor(x) = tanh(-0.7 * x) # x = ΔrG/RT
@@ -18,8 +18,8 @@ function glu_emp_model(glc_ext_input)
     UB_enz =    0.1      # [g enz / g DW cell]
     LB_met = log(1e-6)   # [log(1 uM)]
     UB_met = log(100e-3) # [log(100 mM)]
-    LB_v   = -10        # [mmol/gDW/h]
-    UB_v   = 10        # [mmol/gDW/h]
+    LB_v   = - 10        # [mmol/gDW/h]
+    UB_v   =   10        # [mmol/gDW/h]
     LB_dg  = -100        # [kJ/mol]
     UB_dg  =  100        # [kJ/mol]
 
@@ -71,8 +71,8 @@ function glu_emp_model(glc_ext_input)
         LB_v <= v_nadtrdh  <= UB_v
         LB_v <= v_lp       <= UB_v
         LB_v <= v_glnsyn   <= UB_v
-        LB_v <= v_nh3_diff  <= UB_v
-        LB_v <= v_co2_diff  <= UB_v
+        LB_v <= v_nh3_diff <= UB_v
+        LB_v <= v_co2_diff <= UB_v
 
         # Thermodynamic variables
         LB_dg <= dg_pts      <= UB_dg
@@ -86,15 +86,15 @@ function glu_emp_model(glc_ext_input)
         LB_dg <= dg_nadtrdh  <= UB_dg
         LB_dg <= dg_lp       <= UB_dg
         LB_dg <= dg_glnsyn   <= UB_dg
-        LB_dg <= dg_nh3_diff  <= UB_dg
-        LB_dg <= dg_co2_diff  <= UB_dg
+        LB_dg <= dg_nh3_diff <= UB_dg
+        LB_dg <= dg_co2_diff <= UB_dg
     end
 
     @NLparameters glu_emp begin
         RT == 8.3145e-3 * 298.15 # [kJ/mol]
 
         # Enzyme rates
-        kcat_pts      == 65
+        kcat_pts      ==  65
         kcat_emp      ==  16.0100104283114
         kcat_pyk      == 117.269621287688
         kcat_ldh      ==   8.65643947924285
@@ -103,10 +103,10 @@ function glu_emp_model(glc_ext_input)
         kcat_gdhm     == 342
         kcat_burn     ==  22
         kcat_nadtrdh  ==  51.9313402919591
-        kcat_lp       == 65
+        kcat_lp       ==  65
         kcat_glnsyn   ==  33
-        kcat_co2_diff == 65
-        kcat_nh3_diff == 65
+        kcat_co2_diff ==  65
+        kcat_nh3_diff ==  65
 
         # Gibbs energy of reaction
         dG0_pts      == -16.7
@@ -117,11 +117,11 @@ function glu_emp_model(glc_ext_input)
         dG0_akgsyn   == -60.7
         dG0_gdhm     == -33.4
         dG0_burn     == -29.6
-        dG0_nadtrdh  == 0
-        dG0_lp       == 5
+        dG0_nadtrdh  ==   0
+        dG0_lp       ==   5
         dG0_glnsyn   == -15.3
-        dG0_nh3_diff == 0
-        dG0_co2_diff == 0
+        dG0_nh3_diff ==   0
+        dG0_co2_diff ==   0
 
         # media conditions
         glc_ext == log(glc_ext_input) # [log(M)]
@@ -174,18 +174,18 @@ function glu_emp_model(glc_ext_input)
         v_nh3_diff == nh3_diff * kcat_nh3_diff * thermo_factor(dg_nh3_diff/RT)
 
         # mass balance constraints
-        v_pts - v_emp                             ==  0 # g6p
-        2 * v_emp - v_pyk - v_ppc                 ==  0  # pep
-        v_pyk - v_ldh - v_akgsyn                  ==  0  # pyr
-        v_ldh - v_lp                              ==  0  # lac
-        v_ppc - v_akgsyn                          ==  0  # oac
-        v_akgsyn - v_gdhm                         ==  0  # akg
-        v_gdhm - v_glnsyn                         ==  0  # glu
-        v_glnsyn - mu                             ==  0  # gln
-        v_emp + v_pyk - v_pts - v_burn - v_glnsyn ==  0 # atp
+        v_pts - v_emp                             == 0 # g6p
+        2 * v_emp - v_pyk - v_ppc                 == 0 # pep
+        v_pyk - v_ldh - v_akgsyn                  == 0 # pyr
+        v_ldh - v_lp                              == 0 # lac
+        v_ppc - v_akgsyn                          == 0 # oac
+        v_akgsyn - v_gdhm                         == 0 # akg
+        v_gdhm - v_glnsyn                         == 0 # glu
+        v_glnsyn - mu                             == 0 # gln
+        v_emp + v_pyk - v_pts - v_burn - v_glnsyn == 0 # atp
         v_pts + v_burn + v_glnsyn - v_emp - v_pyk == 0 # adp
-        v_ldh - 2 * v_emp - v_nadtrdh - v_akgsyn  ==  0  # nad
-        2 * v_emp + v_akgsyn + v_nadtrdh - v_ldh  ==  0  # nadh
+        v_ldh - 2 * v_emp - v_nadtrdh - v_akgsyn  == 0 # nad
+        2 * v_emp + v_akgsyn + v_nadtrdh - v_ldh  == 0 # nadh
         2 * v_akgsyn - v_ppc - v_co2_diff         == 0 # co2
         v_nh3_diff - v_gdhm - v_glnsyn            == 0 # nh3
 
@@ -208,47 +208,48 @@ function glu_emp_model(glc_ext_input)
     println(value(v_pts))
     println(value(dg_emp))
 
-
-
-    # results_emp = Dict(
-    #     "mu"        => value(mu),
-    #     "pts"       => value(pts),
-    #     "emp"       => value(emp),
-    #     "pyk"       => value(pyk),
-    #     "ldh"       => value(ldh),
-    #     "ppc"       => value(ppc),
-    #     "akgsyn"    => value(akgsyn),
-    #     "gdhm"      => value(gdhm),
-    #     "burn"      => value(burn),
-    #     "nadtrdh"   => value(nadtrdh),
-    #     "lp"        => value(lp),
-    #     "glc_ext"   => value(glc_ext),
-    #     "g6p"       => value(g6p),
-    #     "pyr"       => value(pyr),
-    #     "pep"       => value(pep),
-    #     "oac"       => value(oac),
-    #     "akg"       => value(akg),
-    #     "lac"       => value(lac),
-    #     "glu"       => value(glu),
-    #     "atp"       => value(atp),
-    #     "adp"       => value(adp),
-    #     "nad"       => value(nad),
-    #     "nadh"      => value(nadh),
-    #     "nadp"      => value(nadp),
-    #     "nadph"     => value(nadph),
-    #     "v_pts"     => value(v_pts),
-    #     "v_emp"     => value(v_emp),
-    #     "v_pyk"     => value(v_pyk),
-    #     "v_ldh"     => value(v_ldh),
-    #     "v_ppc"     => value(v_ppc),
-    #     "v_akgsyn"  => value(v_akgsyn),
-    #     "v_gdhm"    => value(v_gdhm),
-    #     "v_burn"    => value(v_burn),
-    #     "v_nadtrdh" => value(v_nadtrdh),
-    #     "v_lp"      => value(v_lp),
-    #     "v_glnsyn"  => value(v_glnsyn),
-    #     )
-    # return results_emp
+    results_emp = Dict(
+        "mu"        => value(mu),
+        "pts"       => value(pts),
+        "emp"       => value(emp),
+        "pyk"       => value(pyk),
+        "ldh"       => value(ldh),
+        "ppc"       => value(ppc),
+        "akgsyn"    => value(akgsyn),
+        "gdhm"      => value(gdhm),
+        "burn"      => value(burn),
+        "nadtrdh"   => value(nadtrdh),
+        "lp"        => value(lp),
+        "glnsyn"    => value(glnsyn),
+        "nh3_diff"  => value(nh3_diff),
+        "co2_diff"  => value(co2_diff),
+        "glc_ext"   => value(glc_ext),
+        "g6p"       => value(g6p),
+        "pyr"       => value(pyr),
+        "pep"       => value(pep),
+        "oac"       => value(oac),
+        "akg"       => value(akg),
+        "lac"       => value(lac),
+        "glu"       => value(glu),
+        "atp"       => value(atp),
+        "adp"       => value(adp),
+        "nad"       => value(nad),
+        "nadh"      => value(nadh),
+        "nadp"      => value(nadp),
+        "nadph"     => value(nadph),
+        "v_pts"     => value(v_pts),
+        "v_emp"     => value(v_emp),
+        "v_pyk"     => value(v_pyk),
+        "v_ldh"     => value(v_ldh),
+        "v_ppc"     => value(v_ppc),
+        "v_akgsyn"  => value(v_akgsyn),
+        "v_gdhm"    => value(v_gdhm),
+        "v_burn"    => value(v_burn),
+        "v_nadtrdh" => value(v_nadtrdh),
+        "v_lp"      => value(v_lp),
+        "v_glnsyn"  => value(v_glnsyn),
+        )
+    return results_emp
 end
 
 end #module
