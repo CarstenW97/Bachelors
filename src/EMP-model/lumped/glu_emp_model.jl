@@ -3,11 +3,11 @@ using JuMP
 using KNITRO
 
 function glu_emp_model(glc_ext_input)
-    # glc_ext_input = 0.05
+
     glu_emp = Model(optimizer_with_attributes(KNITRO.Optimizer,
         "ms_enable" => 1,
         "ms_maxsolves" => 50))
-    JuMP.set_silent(glu_emp)
+    # JuMP.set_silent(glu_emp)
 
     # Thermodynamic function
     thermo_factor(x) = tanh(-0.7 * x) # x = ΔrG/RT
@@ -18,7 +18,7 @@ function glu_emp_model(glc_ext_input)
     UB_enz =    0.1      # [g enz / g DW cell]
     LB_met = log(1e-6)   # [log(1 uM)]
     UB_met = log(100e-3) # [log(100 mM)]
-    LB_v   = - 10        # [mmol/gDW/h]
+    LB_v   = -10        # [mmol/gDW/h]
     UB_v   =   10        # [mmol/gDW/h]
     LB_dg  = -100        # [kJ/mol]
     UB_dg  =  100        # [kJ/mol]
@@ -36,7 +36,6 @@ function glu_emp_model(glc_ext_input)
         LB_enz <= akgsyn   <= UB_enz # enzyme for: pyr + oac -> akg
         LB_enz <= gdhm     <= UB_enz # enzyme for: akg + NH3 + NADPH -> glu + NADP
         LB_enz <= burn     <= UB_enz # enzyme for: ATP -> ADP
-        LB_enz <= nadtrdh  <= UB_enz # enzyme for: NAD + NADPH -> NADH + NADP
         LB_enz <= lp       <= UB_enz # enzyme for: lac internal -> lac external
         LB_enz <= glnsyn   <= UB_enz # enzyme for: glu + ATP + NH3 -> gln + ADP
         LB_enz <= nh3_diff <= UB_enz # enzyme for: nh3_ext -> nh3
@@ -68,7 +67,6 @@ function glu_emp_model(glc_ext_input)
         LB_v <= v_akgsyn   <= UB_v
         LB_v <= v_gdhm     <= UB_v
         LB_v <= v_burn     <= UB_v
-        LB_v <= v_nadtrdh  <= UB_v
         LB_v <= v_lp       <= UB_v
         LB_v <= v_glnsyn   <= UB_v
         LB_v <= v_nh3_diff <= UB_v
@@ -83,7 +81,6 @@ function glu_emp_model(glc_ext_input)
         LB_dg <= dg_akgsyn   <= UB_dg
         LB_dg <= dg_gdhm     <= UB_dg
         LB_dg <= dg_burn     <= UB_dg
-        LB_dg <= dg_nadtrdh  <= UB_dg
         LB_dg <= dg_lp       <= UB_dg
         LB_dg <= dg_glnsyn   <= UB_dg
         LB_dg <= dg_nh3_diff <= UB_dg
@@ -102,7 +99,6 @@ function glu_emp_model(glc_ext_input)
         kcat_akgsyn   ==   4
         kcat_gdhm     == 342
         kcat_burn     ==  22
-        kcat_nadtrdh  ==  51.9313402919591
         kcat_lp       ==  65
         kcat_glnsyn   ==  33
         kcat_co2_diff ==  65
@@ -110,14 +106,13 @@ function glu_emp_model(glc_ext_input)
 
         # Gibbs energy of reaction
         dG0_pts      == -16.7
-        dG0_emp      == - 4.71
+        dG0_emp      == -4.71
         dG0_pyk      == -25.0
         dG0_ldh      == -23.7
         dG0_ppc      == -32.2
         dG0_akgsyn   == -60.7
         dG0_gdhm     == -33.4
         dG0_burn     == -29.6
-        dG0_nadtrdh  ==   0
         dG0_lp       ==   5
         dG0_glnsyn   == -15.3
         dG0_nh3_diff ==   0
@@ -131,15 +126,16 @@ function glu_emp_model(glc_ext_input)
 
         # intracellular conditions
         phos == log(1e-3) # [log[1mM]]
-        # set nadph/nadp ≈ 3
-        nadph == log(3e-3)
+
+        # set nadph/nadp = 2.6
+        nadph == log(2.6e-3)
         nadp == log(1e-3)
 
         # capacity constraint
         total_proteome_mass_fraction == 0.1 # [g enz/gDW]
 
         # maintenance requirement
-        min_burn_flux == 1e-3 # [mmol/gDW/h]
+        min_burn == 0.01 # 10% of proteome
     end
 
     @NLconstraints glu_emp begin
@@ -152,7 +148,6 @@ function glu_emp_model(glc_ext_input)
         dg_akgsyn   == dG0_akgsyn  + RT * (akg + 2 * co2 + nadh + nadph - nad - nadp - pyr - oac)
         dg_gdhm     == dG0_gdhm + RT * (akg + nadph + nh3 - glu - nadp)
         dg_burn     == dG0_burn + RT * (adp - atp)
-        dg_nadtrdh  == dG0_nadtrdh + RT * (nad + nadph - nadh - nadp)
         dg_lp       == dG0_lp + RT * (lac_ext - lac)
         dg_glnsyn   == dG0_glnsyn + RT * (gln + adp - glu - atp - nh3)
         dg_co2_diff == dG0_co2_diff + RT * (co2_ext - co2)
@@ -167,7 +162,6 @@ function glu_emp_model(glc_ext_input)
         v_akgsyn == akgsyn * kcat_akgsyn * thermo_factor(dg_akgsyn/RT)
         v_gdhm == gdhm * kcat_gdhm * thermo_factor(dg_gdhm/RT)
         v_burn == burn * kcat_burn * thermo_factor(dg_burn/RT)
-        v_nadtrdh == nadtrdh * kcat_nadtrdh * thermo_factor(dg_nadtrdh/RT)
         v_lp == lp * kcat_lp * thermo_factor(dg_lp/RT)
         v_glnsyn == glnsyn * kcat_glnsyn * thermo_factor(dg_glnsyn/RT)
         v_co2_diff == co2_diff * kcat_co2_diff* thermo_factor(dg_co2_diff/RT)
@@ -184,20 +178,22 @@ function glu_emp_model(glc_ext_input)
         v_glnsyn - mu                             == 0 # gln
         v_emp + v_pyk - v_pts - v_burn - v_glnsyn == 0 # atp
         v_pts + v_burn + v_glnsyn - v_emp - v_pyk == 0 # adp
-        v_ldh - 2 * v_emp - v_nadtrdh - v_akgsyn  == 0 # nad
-        2 * v_emp + v_akgsyn + v_nadtrdh - v_ldh  == 0 # nadh
+        v_ldh - 2 * v_emp - v_akgsyn  == 0 # nad
+        2 * v_emp + v_akgsyn - v_ldh  == 0 # nadh
         2 * v_akgsyn - v_ppc - v_co2_diff         == 0 # co2
         v_nh3_diff - v_gdhm - v_glnsyn            == 0 # nh3
 
         # density constraint(s) (can add more, e.g. membrane)
-        pts + emp + pyk + ldh + ppc + akgsyn + gdhm + burn + nadtrdh + lp + glnsyn + co2_diff + nh3_diff <= total_proteome_mass_fraction
+        pts + emp + pyk + ldh + ppc + akgsyn + gdhm + burn + lp + glnsyn + co2_diff + nh3_diff <= total_proteome_mass_fraction
 
         # minimum maintenance
-        min_burn_flux <= v_burn
+        min_burn <= burn
 
-        # measured ratio constraints (not strictly necessary)
-        # atp   == log(10)  + adp  # atp/adp = 10, but remember that the concentration variables are logged
-        # nadh  == log(0.2) + nad
+        # set ATP/ADP = 10
+        atp == log(10) + adp
+
+        # set NADH/NAD
+        nadh == log(0.9) + nad
     end
 
     @objective(glu_emp, Max, mu)
