@@ -10,7 +10,7 @@ function gln_model(;
     ac_ext = 1e-6,
     etoh_ext = 1e-6,
     formate_ext = 1e-4,
-    proteome = 0.5,
+    proteome = 0.05,
     num_ms = 10,
     atp_adp_ratio = 10,
     nadh_nad_ratio = 0.2,
@@ -74,7 +74,6 @@ function gln_model(;
         LB_enz <= acald <= UB_enz
         LB_enz <= alcd <= UB_enz
         LB_enz <= etoht <= UB_enz
-        LB_enz <= thd <= UB_enz
         LB_enz <= pfl <= UB_enz
         LB_enz <= fort <= UB_enz
 
@@ -138,7 +137,6 @@ function gln_model(;
         LB_v <= v_ackr <= UB_v
         LB_v <= v_acald <= UB_v
         LB_v <= v_alcd <= UB_v
-        LB_v <= v_thd <= UB_v
         LB_v <= v_pfl <= UB_v
         LB_v <= v_fort <= UB_v
 
@@ -171,7 +169,6 @@ function gln_model(;
         LB_dg <= dg_ackr <= UB_dg
         LB_dg <= dg_acald <= UB_dg
         LB_dg <= dg_alcd <= UB_dg
-        LB_dg <= dg_thd <= UB_dg
         LB_dg <= dg_pfl <= UB_dg
         LB_dg <= dg_fort <= UB_dg
     end
@@ -207,7 +204,6 @@ function gln_model(;
         kcat_acald == 11454.251270331857
         kcat_alcd == 1622.4755081413768
         kcat_etoht == 7090.909090909091
-        kcat_thd == 4528.47715441333
         kcat_pfl == 1533.4864896342106
         kcat_fort == 7603.197337814887
 
@@ -241,7 +237,6 @@ function gln_model(;
         dg0_ptar == 14.9
         dg0_ackr == -16.2
         dg0_alcd == -20.9
-        dg0_thd == -1.4
         dg0_pfl == -23.4
 
         # media conditions log[M]
@@ -291,7 +286,6 @@ function gln_model(;
         dg_alcd == dg0_alcd + RT * (etoh + nad - nadh - acetald)
         dg_ptar == dg0_ptar + RT * (actp + coa - phos - accoa)
         dg_ackr == dg0_ackr + RT * (ac + atp - adp - actp)
-        dg_thd == dg0_thd + RT * (nad + nadph - nadh - nadp)
         dg_pfl == dg0_pfl + RT * (accoa + formate - coa - pyr)
 
         # flux to kinetics and thermodynamics
@@ -323,7 +317,6 @@ function gln_model(;
         v_alcd == kcat_alcd * alcd * thermo_factor(dg_alcd / RT)
         v_ptar == kcat_ptar * ptar * thermo_factor(dg_ptar / RT)
         v_ackr == kcat_ackr * ackr * thermo_factor(dg_ackr / RT)
-        v_thd == kcat_thd * thd * thermo_factor(dg_thd / RT)
         v_pfl == kcat_pfl * pfl * thermo_factor(dg_pfl / RT)
 
         # mass balance constraints
@@ -349,8 +342,8 @@ function gln_model(;
         v_glns - mu == 0 # gln
         v_pgk + v_pyk - v_pfk - v_glns - v_burn + v_ackr == 0 # atp
         -v_pgk - v_pyk + v_pfk + v_glns + v_burn - v_ackr == 0 # adp
-        v_ldh - v_pdh - v_gapd + v_acald + v_alcd + v_thd == 0 # nad
-        -v_ldh + v_pdh + v_gapd - v_acald - v_alcd - v_thd == 0 # nadh
+        v_ldh - v_pdh - v_gapd + v_acald + v_alcd == 0 # nad
+        -v_ldh + v_pdh + v_gapd - v_acald - v_alcd == 0 # nadh
         v_ptar - v_ackr == 0 # actp
         v_ackr - v_act == 0 # ac
         v_acald - v_alcd == 0 # acetald
@@ -360,7 +353,7 @@ function gln_model(;
         # density constraint(s) (can add more, e.g. membrane)
         pts + pgi + pfk + fba + tpi + gapd + pgk + pgm + eno + pyk +
         ppc + ldh + pdh + lact + cs + aconta + acontb + icdh + gludy + glns +
-        nh4t + ptar + ackr + acald + alcd + etoht + act + thd + pfl + fort <= proteome
+        nh4t + ptar + ackr + acald + alcd + etoht + act + pfl + fort <= proteome
 
         # set ATP/ADP ratio NB: don't set the concentration bounds so that the ratio is not possible
         atp == log(atp_adp_ratio) + adp
