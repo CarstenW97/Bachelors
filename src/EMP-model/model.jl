@@ -363,6 +363,17 @@ function gln_model(;
     @objective(gln_model, Max, mu)
     optimize!(gln_model)
 
+    results = Dict(
+        "glc_e"     => value(glc_e),
+        "lac_e"     => value(lac_e),
+        "co2"       => value(co2),
+        "nh4_e"     => value(nh4_e),
+        "etoh_e"    => value(etoh_e),
+        "ac_e"      => value(ac_e),
+        "formate_e" => value(formate_e),
+        )
+    return results
+
     return gln_model
 end
 
