@@ -24,7 +24,7 @@ function gln_model(;
         ),
     )
 
-    # JuMP.set_silent(gln_model)
+    JuMP.set_silent(gln_model)
 
     # Thermodynamic function
     thermo_factor(x) = tanh(-0.7 * x) # x = ΔrG/RT
@@ -389,18 +389,12 @@ function gln_model(;
     @objective(gln_model, Max, mu)
     optimize!(gln_model)
 
-    results = Dict(
-        "glc_e" => value(glc_e),
-        "lac_e" => value(lac_e),
-        "co2" => value(co2),
-        "nh4_e" => value(nh4_e),
-        "etoh_e" => value(etoh_e),
-        "ac_e" => value(ac_e),
-        "formate_e" => value(formate_e),
-    )
-    return results
-
-    return gln_model
+    if termination_status(gln_model) ∉ [MOI.OPTIMAL, MOI.LOCALLY_SOLVED, MOI.ALMOST_LOCALLY_SOLVED, MOI.ALMOST_OPTIMAL]
+        @warn "Not solved optimally"
+        return nothing
+    else
+        return gln_model
+    end
 end
 
 end #module
