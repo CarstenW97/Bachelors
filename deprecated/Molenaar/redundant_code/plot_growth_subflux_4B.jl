@@ -8,14 +8,14 @@ resultspath = joinpath("Molenaar", "Results")
 
 x = [res["mu"] for res in stats]
 a = [res["cat_flux"] for res in statsb]
-b = [res["met_flux"] for res in statsb] 
+b = [res["met_flux"] for res in statsb]
 
 fig = Figure()
-ax = Axis(fig[1,1])
+ax = Axis(fig[1, 1])
 scatter1 = scatter!(ax, x, a)
-line1 =lines!(ax, x, a)
+line1 = lines!(ax, x, a)
 scatter2 = scatter!(ax, x, b)
-line2 =lines!(ax, x, b)
+line2 = lines!(ax, x, b)
 
 ax.xlabel = "Growth rate"
 ax.ylabel = "Fraction of the total substarte flux"

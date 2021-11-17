@@ -8,7 +8,7 @@ resultspath = joinpath("docs", "results", "EMP-model")
 
 ## Proteome - glucose concentration ##
 
-x  = value(m[glc_e])
+x = value(m[glc_e])
 a1 = value(m[:pts])
 b1 = value(m[:pgi])
 c1 = value(m[:pfk])
@@ -25,7 +25,7 @@ m1 = value(m[:pdh])
 n1 = value(m[:lact])
 o1 = value(m[:cs])
 p1 = value(m[:aconta])
-q1 = value(m[:acontb]) 
+q1 = value(m[:acontb])
 r1 = value(m[:icdh])
 s1 = value(m[:gludy])
 t1 = value(m[:glns])
@@ -39,24 +39,82 @@ d2 = value(m[:act])
 e2 = value(m[:pfl])
 f2 = value(m[:fort])
 
-fracs = [a1, b1, c1, d1, e1, f1, g1, h1, i1, j1, k1, l1, m1, n1, o1, p1, q1, r1, s1, t1, u1, v1, w1, a2, b2, c2, d2, e2, f2]
-fraclabels = ["pts", "pgi", "pfk", "fba", "tpi", "gapd", "pgk", "pgm", "eno", "pyk", "ppc", "ldh", "pdh", "lact", "cs", "aconta",
-              "acontb", "icdh", "gludy", "glns", "nh4t", "acald", "alcd", "etoht", "ackr", "ptar", "act", "pfl", "fort"]
+fracs = [
+    a1,
+    b1,
+    c1,
+    d1,
+    e1,
+    f1,
+    g1,
+    h1,
+    i1,
+    j1,
+    k1,
+    l1,
+    m1,
+    n1,
+    o1,
+    p1,
+    q1,
+    r1,
+    s1,
+    t1,
+    u1,
+    v1,
+    w1,
+    a2,
+    b2,
+    c2,
+    d2,
+    e2,
+    f2,
+]
+fraclabels = [
+    "pts",
+    "pgi",
+    "pfk",
+    "fba",
+    "tpi",
+    "gapd",
+    "pgk",
+    "pgm",
+    "eno",
+    "pyk",
+    "ppc",
+    "ldh",
+    "pdh",
+    "lact",
+    "cs",
+    "aconta",
+    "acontb",
+    "icdh",
+    "gludy",
+    "glns",
+    "nh4t",
+    "acald",
+    "alcd",
+    "etoht",
+    "ackr",
+    "ptar",
+    "act",
+    "pfl",
+    "fort",
+]
 function plot_proteome(ax, x, fracs, fraclabels)
-    z = cumsum(hcat(fracs...)'; dims=1)
-    z = [zeros(size(z, 2))'; z ./ z[end,:]']
-    for i in 1:length(fraclabels)
-        band!(ax, x, z[i,:], z[i+1,:], label=fraclabels[i])
+    z = cumsum(hcat(fracs...)'; dims = 1)
+    z = [zeros(size(z, 2))'; z ./ z[end, :]']
+    for i = 1:length(fraclabels)
+        band!(ax, x, z[i, :], z[i+1, :], label = fraclabels[i])
     end
 end
 
 f = Figure();
-ax = Axis(f[1,1]);
+ax = Axis(f[1, 1]);
 plot_proteome(ax, x, fracs, fraclabels)
 ax.xlabel = "Glucose concentration"
 ax.ylabel = "Proteome fraction"
-f[1,2] = Legend(f, ax, "Protein",
-                    unique=true,  framevisible = false)
+f[1, 2] = Legend(f, ax, "Protein", unique = true, framevisible = false)
 f
 
 FileIO.save(joinpath(imgpath, "Proteome_Glc.pdf"), f)

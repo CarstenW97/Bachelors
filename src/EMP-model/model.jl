@@ -21,7 +21,7 @@ function gln_model(;
             KNITRO.Optimizer,
             "ms_enable" => 1,
             "ms_maxsolves" => num_ms,
-        )
+        ),
     )
 
     # JuMP.set_silent(gln_model)
@@ -89,7 +89,7 @@ function gln_model(;
         LB_met <= pep <= UB_met
         LB_met <= pyr <= UB_met
         LB_met <= lac <= UB_met
-        LB_met <= accoa <=  UB_met
+        LB_met <= accoa <= UB_met
         LB_met <= oaa <= UB_met
         LB_met <= cit <= UB_met
         LB_met <= acon <= UB_met
@@ -351,9 +351,35 @@ function gln_model(;
         v_pfl - v_fort == 0 # formate
 
         # density constraint(s) (can add more, e.g. membrane)
-        pts + pgi + pfk + fba + tpi + gapd + pgk + pgm + eno + pyk +
-        ppc + ldh + pdh + lact + cs + aconta + acontb + icdh + gludy + glns +
-        nh4t + ptar + ackr + acald + alcd + etoht + act + pfl + fort <= proteome
+        pts +
+        pgi +
+        pfk +
+        fba +
+        tpi +
+        gapd +
+        pgk +
+        pgm +
+        eno +
+        pyk +
+        ppc +
+        ldh +
+        pdh +
+        lact +
+        cs +
+        aconta +
+        acontb +
+        icdh +
+        gludy +
+        glns +
+        nh4t +
+        ptar +
+        ackr +
+        acald +
+        alcd +
+        etoht +
+        act +
+        pfl +
+        fort <= proteome
 
         # set ATP/ADP ratio NB: don't set the concentration bounds so that the ratio is not possible
         atp == log(atp_adp_ratio) + adp
@@ -364,14 +390,14 @@ function gln_model(;
     optimize!(gln_model)
 
     results = Dict(
-        "glc_e"     => value(glc_e),
-        "lac_e"     => value(lac_e),
-        "co2"       => value(co2),
-        "nh4_e"     => value(nh4_e),
-        "etoh_e"    => value(etoh_e),
-        "ac_e"      => value(ac_e),
+        "glc_e" => value(glc_e),
+        "lac_e" => value(lac_e),
+        "co2" => value(co2),
+        "nh4_e" => value(nh4_e),
+        "etoh_e" => value(etoh_e),
+        "ac_e" => value(ac_e),
         "formate_e" => value(formate_e),
-        )
+    )
     return results
 
     return gln_model

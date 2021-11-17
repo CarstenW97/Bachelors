@@ -7,7 +7,7 @@ res = MolenaarBasic.molenaar_basic(2)
 # Figures
 results = []
 for sext in [0.01:0.05:5;]
-  push!(results, MolenaarBasic.molenaar_basic(sext))
+    push!(results, MolenaarBasic.molenaar_basic(sext))
 end
 
 # Test for the remake of the molenaar model
@@ -18,7 +18,7 @@ import .MolenaarRemake2
 
 results_test = []
 for sext in [0.01:0.05:5;]
-  push!(results_test, MolenaarRemake2.molenaar_remake2(sext))
+    push!(results_test, MolenaarRemake2.molenaar_remake2(sext))
 end
 
 #########
@@ -31,7 +31,7 @@ res = MolenaarAlt.molenaar_alt(2)
 # Figure 4A
 stats = []
 for sext in [0.01:0.05:5;]
-  push!(stats, MolenaarAlt.molenaar_alt(sext))
+    push!(stats, MolenaarAlt.molenaar_alt(sext))
 end
 
 #########
@@ -43,6 +43,6 @@ res = MolenaarAltB.molenaar_altb(2)
 
 # Figure 4B
 statsb = []
-for sext in 0.001:20
-  push!(statsb, MolenaarAltB.molenaar_altb(sext))
+for sext = 0.001:20
+    push!(statsb, MolenaarAltB.molenaar_altb(sext))
 end

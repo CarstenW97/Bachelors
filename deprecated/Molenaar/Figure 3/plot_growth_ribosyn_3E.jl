@@ -10,7 +10,7 @@ x = [res["mu"] for res in results]
 y = [res["v_ribo"] for res in results]
 
 fig = Figure()
-ax = Axis(fig[1,1])
+ax = Axis(fig[1, 1])
 scatter!(ax, x, y)
 lines!(ax, x, y)
 

@@ -5,15 +5,17 @@ using KNITRO
 
 function mos_model(glc_ext)
     model = Model(
-        optimizer_with_attributes(KNITRO.Optimizer,
-        "ms_enable" => 1,
-        "honorbnds" => 1,
-        "ms_maxsolves" => 10), # might need more resolves when model gets more complicated
+        optimizer_with_attributes(
+            KNITRO.Optimizer,
+            "ms_enable" => 1,
+            "honorbnds" => 1,
+            "ms_maxsolves" => 10,
+        ), # might need more resolves when model gets more complicated
     )
 
     # make functions
     ϵ = 1e-6
-    fmax(x) = (x + sqrt(ϵ + x^2))/2 # max(0, x) approximation (this creates a normal Julia function)
+    fmax(x) = (x + sqrt(ϵ + x^2)) / 2 # max(0, x) approximation (this creates a normal Julia function)
     register(model, :fmax, 1, fmax; autodiff = true) # JuMP emits a warning telling you to do this
     fmin(x) = -fmax(-x) # min(0, x) approximation
     register(model, :fmin, 1, fmin; autodiff = true) # JuMP emits a warning telling you to do this
@@ -108,19 +110,19 @@ function mos_model(glc_ext)
         dg_lp == dg0_lp + RT * (lac_ext - lac)
 
         # flux bounds due to kinetics and thermodynamics
-        pts * kcat_pts * fmin(exp(-dg_pts/RT) - 1) <= v_pts
-        emp * kcat_emp * fmin(exp(-dg_emp/RT) - 1) <= v_emp
-        pyk * kcat_pyk * fmin(exp(-dg_pyk/RT) - 1) <= v_pyk
-        ldh * kcat_ldh * fmin(exp(-dg_ldh/RT) - 1) <= v_ldh
-        burn * kcat_burn * fmin(exp(-dg_burn/RT) - 1) <= v_burn
-        lp * kcat_lp * fmin(exp(-dg_lp/RT) - 1) <= v_lp
+        pts * kcat_pts * fmin(exp(-dg_pts / RT) - 1) <= v_pts
+        emp * kcat_emp * fmin(exp(-dg_emp / RT) - 1) <= v_emp
+        pyk * kcat_pyk * fmin(exp(-dg_pyk / RT) - 1) <= v_pyk
+        ldh * kcat_ldh * fmin(exp(-dg_ldh / RT) - 1) <= v_ldh
+        burn * kcat_burn * fmin(exp(-dg_burn / RT) - 1) <= v_burn
+        lp * kcat_lp * fmin(exp(-dg_lp / RT) - 1) <= v_lp
 
-        v_pts <= pts * kcat_pts * fmax(1 - exp(dg_pts/RT))
-        v_emp <= emp * kcat_emp * fmax(1 - exp(dg_emp/RT))
-        v_pyk <= pyk * kcat_pyk * fmax(1 - exp(dg_pyk/RT))
-        v_ldh <= ldh * kcat_ldh * fmax(1 - exp(dg_ldh/RT))
-        v_burn <= burn * kcat_burn * fmax(1 - exp(dg_burn/RT))
-        v_lp <= lp * kcat_lp * fmax(1 - exp(dg_lp/RT))
+        v_pts <= pts * kcat_pts * fmax(1 - exp(dg_pts / RT))
+        v_emp <= emp * kcat_emp * fmax(1 - exp(dg_emp / RT))
+        v_pyk <= pyk * kcat_pyk * fmax(1 - exp(dg_pyk / RT))
+        v_ldh <= ldh * kcat_ldh * fmax(1 - exp(dg_ldh / RT))
+        v_burn <= burn * kcat_burn * fmax(1 - exp(dg_burn / RT))
+        v_lp <= lp * kcat_lp * fmax(1 - exp(dg_lp / RT))
 
         # mass balance constraints
         v_pts - v_emp == mu # g6p
@@ -130,7 +132,7 @@ function mos_model(glc_ext)
         2 * v_emp + v_pyk - v_pts - v_burn == mu # atp
         v_pts + v_burn - 2 * v_emp - v_pyk == -mu # adp
         v_ldh - 2 * v_emp == 0 # nad
-        2 * v_emp  - v_ldh == 0 # nadh
+        2 * v_emp - v_ldh == 0 # nadh
 
         # density constraint(s) (can add more, e.g. membrane)
         pts + emp + pyk + ldh + lp + burn <= total_proteome_mass_fraction
@@ -148,23 +150,24 @@ function mos_model(glc_ext)
     objective_value(model)
 
     results_mo = Dict(
-        "mu"        => value(mu),
-        "glc_ext"   => value(glc_ext),
-        "g6p"       => value(g6p),
-        "pyr"       => value(pyr),
-        "pep"       => value(pep),
-        "lac"       => value(lac), 
-        "atp"       => value(atp),
-        "adp"       => value(adp),
-        "nad"       => value(nad),
-        "nadh"      => value(nadh),       
-        "v_pts"     => value(v_pts),
-        "v_emp"     => value(v_emp),
-        "v_pyk"     => value(v_pyk),
-        "v_ldh"     => value(v_ldh),
-        "v_burn"    => value(v_burn),
-        "v_lp"      => value(v_lp))
+        "mu" => value(mu),
+        "glc_ext" => value(glc_ext),
+        "g6p" => value(g6p),
+        "pyr" => value(pyr),
+        "pep" => value(pep),
+        "lac" => value(lac),
+        "atp" => value(atp),
+        "adp" => value(adp),
+        "nad" => value(nad),
+        "nadh" => value(nadh),
+        "v_pts" => value(v_pts),
+        "v_emp" => value(v_emp),
+        "v_pyk" => value(v_pyk),
+        "v_ldh" => value(v_ldh),
+        "v_burn" => value(v_burn),
+        "v_lp" => value(v_lp),
+    )
     return results_mo
-end     
+end
 
 end #module

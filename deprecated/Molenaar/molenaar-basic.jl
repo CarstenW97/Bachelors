@@ -3,16 +3,20 @@ using JuMP
 using KNITRO
 
 function molenaar_basic(sub_out_con)
-    molenaar = Model(optimizer_with_attributes(KNITRO.Optimizer,
-        "ms_enable" => 1,
-        "opttol" => 1E-16,
-        "opttolabs" => 1e-16,
-        "honorbnds" => 1,
-        "ms_maxsolves" => 10))
+    molenaar = Model(
+        optimizer_with_attributes(
+            KNITRO.Optimizer,
+            "ms_enable" => 1,
+            "opttol" => 1E-16,
+            "opttolabs" => 1e-16,
+            "honorbnds" => 1,
+            "ms_maxsolves" => 10,
+        ),
+    )
     JuMP.set_silent(molenaar)
 
     michaelis_menten(metabolite, protein, kcat, Km) =
-            (kcat * protein * metabolite)/(Km + metabolite)
+        (kcat * protein * metabolite) / (Km + metabolite)
     register(molenaar, :michaelis_menten, 4, michaelis_menten; autodiff = true)
 
     # Constraints (used the same for now)
@@ -25,12 +29,12 @@ function molenaar_basic(sub_out_con)
 
         # Concentrations
         LB <= sub_out <= UB # substarte outside concentration
-        LB <= sub_in  <= UB # subtrate inside concentration
-        LB <= ribo    <= UB # ribosome concentration
-        LB <= lipid   <= UB # lipid concentration 
-        LB <= prec    <= UB # precursor concentration
-        LB <= transp  <= UB # transporter concentration
-        LB <= metab   <= UB # metabolic enzyme concentration
+        LB <= sub_in <= UB # subtrate inside concentration
+        LB <= ribo <= UB # ribosome concentration
+        LB <= lipid <= UB # lipid concentration 
+        LB <= prec <= UB # precursor concentration
+        LB <= transp <= UB # transporter concentration
+        LB <= metab <= UB # metabolic enzyme concentration
         LB <= lip_syn <= UB # lipid biosynthesis enzyme concentration
 
         # Rates
@@ -63,7 +67,7 @@ function molenaar_basic(sub_out_con)
         v_lip == michaelis_menten(prec, lip_syn, kcat_lip, Km_lip)
 
         beta * (lipid + transp) == 1     # membrane proportions
-        sum(used_ribo[i] for i=1:4) == 1   # ribosome proportions
+        sum(used_ribo[i] for i = 1:4) == 1   # ribosome proportions
         metab + ribo + lip_syn <= 1.0      # intracellular density
         transp <= lipid                    # transporter density
 
@@ -79,17 +83,17 @@ function molenaar_basic(sub_out_con)
         v_lip - mu * lipid == 0
     end
 
-    @objective(molenaar,Max,mu)
+    @objective(molenaar, Max, mu)
     optimize!(molenaar)
 
     res = Dict(
-            "mu" => value(mu),
-            "used_ribo" => value.(used_ribo),
-            "sub_out" => value(sub_out),
-            "sub_in" => value(sub_in),
-            "v_ribo" => value(v_ribo)
-        )
+        "mu" => value(mu),
+        "used_ribo" => value.(used_ribo),
+        "sub_out" => value(sub_out),
+        "sub_in" => value(sub_in),
+        "v_ribo" => value(v_ribo),
+    )
     return res
-end 
+end
 
 end #module

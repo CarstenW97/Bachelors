@@ -14,7 +14,7 @@ b = [] # matabolic rate
 c = [] # ribosomale rate
 d = [] # lipid biosynthesis rate
 
-for i in 1:31
+for i = 1:31
     push!(a, y[i][1])
     push!(b, y[i][2])
     push!(c, y[i][3])
@@ -27,7 +27,7 @@ c = Float64.(c)
 d = Float64.(d)
 
 fig = Figure()
-ax = Axis(fig[1,1])
+ax = Axis(fig[1, 1])
 scatter1 = scatter!(ax, x, a) # blue
 line1 = lines!(ax, x, a)
 scatter2 = scatter!(ax, x, b) # yellow
@@ -39,9 +39,16 @@ line4 = lines!(ax, x, d)
 
 ax.xlabel = "Growth rate (1/h)"
 ax.ylabel = "Protein fraction"
-fig[1, 1] = Legend(fig, [[scatter1, line1], [scatter2, line2], [scatter3, line3], [scatter4, line4]], ["Transporter", "Metabolism", "Ribosomes", "Lipids"],
-    tellheight = false, tellwidth = false, halign = :right, valign = :top, labelsize = 14)
+fig[1, 1] = Legend(
+    fig,
+    [[scatter1, line1], [scatter2, line2], [scatter3, line3], [scatter4, line4]],
+    ["Transporter", "Metabolism", "Ribosomes", "Lipids"],
+    tellheight = false,
+    tellwidth = false,
+    halign = :right,
+    valign = :top,
+    labelsize = 14,
+)
 fig
 
 FileIO.save(joinpath(imgpath, "Figure_3C.pdf"), fig)
-  

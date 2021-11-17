@@ -12,7 +12,7 @@ x = [exp(results_emp["glc_ext"]) for results_emp in res_emp]
 y = [exp(results_emp["pts"]) for results_emp in res_emp]
 
 fig = Figure()
-ax = Axis(fig[1,1])
+ax = Axis(fig[1, 1])
 scatter_glc = scatter!(ax, x, y)
 line_glc = lines!(ax, x, y)
 
@@ -29,7 +29,7 @@ x = [exp(results_emp["glc_ext"]) for results_emp in res_emp]
 y = [results_emp["v_ldh"] for results_emp in res_emp]
 
 fig = Figure()
-ax = Axis(fig[1,1])
+ax = Axis(fig[1, 1])
 scatter_glc = scatter!(ax, x, y)
 line_glc = lines!(ax, x, y)
 
@@ -46,7 +46,7 @@ x = [exp(results_emp["glc_ext"]) for results_emp in res_emp]
 y = [results_emp["v_glnsyn"] for results_emp in res_emp]
 
 fig = Figure()
-ax = Axis(fig[1,1])
+ax = Axis(fig[1, 1])
 scatter_glc = scatter!(ax, x, y)
 line_glc = lines!(ax, x, y)
 
@@ -75,23 +75,34 @@ l = [results_ed["nh3_diff"] for results_ed in res_emp]
 m = [results_ed["co2_diff"] for results_ed in res_emp]
 
 fracs = [a, b, c, d, e, f, g, h, i, j, k, l, m]
-fraclabels = ["PTS", "EMP", "Pyruvate kinase", "Lactate dehydrogenase", "Phosphoenolpyruvate carboxylase", "alpah-Ketogluterate synthesis enzyme",
-              "Glutamate synthesis enzyme","ATP burning enzyme", "Lactate permease", "Glutamine synthesis enzyme", "NH3 permease", "CO2 permease"]
+fraclabels = [
+    "PTS",
+    "EMP",
+    "Pyruvate kinase",
+    "Lactate dehydrogenase",
+    "Phosphoenolpyruvate carboxylase",
+    "alpah-Ketogluterate synthesis enzyme",
+    "Glutamate synthesis enzyme",
+    "ATP burning enzyme",
+    "Lactate permease",
+    "Glutamine synthesis enzyme",
+    "NH3 permease",
+    "CO2 permease",
+]
 function plot_proteome(ax, x, fracs, fraclabels)
-    z = cumsum(hcat(fracs...)'; dims=1)
-    z = [zeros(size(z, 2))'; z ./ z[end,:]']
-    for i in 1:length(fraclabels)
-        band!(ax, x, z[i,:], z[i+1,:], label=fraclabels[i])
+    z = cumsum(hcat(fracs...)'; dims = 1)
+    z = [zeros(size(z, 2))'; z ./ z[end, :]']
+    for i = 1:length(fraclabels)
+        band!(ax, x, z[i, :], z[i+1, :], label = fraclabels[i])
     end
 end
 
 f = Figure();
-ax = Axis(f[1,1]);
+ax = Axis(f[1, 1]);
 plot_proteome(ax, x, fracs, fraclabels)
 ax.xlabel = "Glucose concentration"
 ax.ylabel = "Proteome fraction"
-f[1,2] = Legend(f, ax, "Protein",
-                    unique=true,  framevisible = false)
+f[1, 2] = Legend(f, ax, "Protein", unique = true, framevisible = false)
 f
 
 FileIO.save(joinpath(imgpath, "EMP_Proteome_Glc.pdf"), f)
