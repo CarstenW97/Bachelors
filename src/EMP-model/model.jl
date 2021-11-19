@@ -11,7 +11,7 @@ function gln_model(;
     etoh_ext = 1e-6,
     formate_ext = 1e-4,
     proteome = 0.05,
-    num_ms = 100,
+    num_ms = 20,
     atp_adp_ratio = 10,
     nadh_nad_ratio = 0.2,
 )
@@ -386,14 +386,58 @@ function gln_model(;
         nadh == log(nadh_nad_ratio) + nad
     end
 
-    @objective(gln_model, Max, mu)
+    return gln_model
+end
+
+function max_mu!(gln_model, prev_sol=Dict{Symbol, Float64}())
+
+    if !isempty(prev_sol)
+        for (k, v) in prev_sol
+            set_start_value(gln_model[k], v)
+        end
+    end
+
+    @objective(gln_model, Max, gln_model[:mu])
+
     optimize!(gln_model)
 
     if termination_status(gln_model) ∉ [MOI.OPTIMAL, MOI.LOCALLY_SOLVED, MOI.ALMOST_LOCALLY_SOLVED, MOI.ALMOST_OPTIMAL]
-        @warn "Not solved optimally"
-        return nothing
+        return false
     else
-        return gln_model
+        return true
+    end
+end
+
+function find_nearest!(gln_model, prev_sol=Dict{Symbol, Float64}())
+
+    isempty(prev_sol) && return true # if no prev solution, don't do anything
+
+    if !isempty(prev_sol)
+        for (k, v) in prev_sol
+            set_start_value(gln_model[k], v)
+        end
+    end
+
+    mu = value(gln_model[:mu])
+
+    JuMP.fix(gln_model[:mu], mu; force=true)
+
+    @objective(gln_model, Min,
+        sum( (gln_model[k] - v)^2 for (k, v) in prev_sol)
+    )
+
+    optimize!(gln_model)
+
+    if termination_status(gln_model) ∉ [MOI.OPTIMAL, MOI.LOCALLY_SOLVED, MOI.ALMOST_LOCALLY_SOLVED, MOI.ALMOST_OPTIMAL]
+        return false
+    else
+        return true
+    end
+end
+
+function update!(gln_model, prev_sol)
+    for var in Symbol.(all_variables(gln_model))
+        prev_sol[var] = value(gln_model[var])
     end
 end
 
