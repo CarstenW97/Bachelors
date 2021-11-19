@@ -11,7 +11,7 @@ function gln_model(;
     etoh_ext = 1e-6,
     formate_ext = 1e-4,
     proteome = 0.05,
-    num_ms = 10,
+    num_ms = 100,
     atp_adp_ratio = 10,
     nadh_nad_ratio = 0.2,
 )
