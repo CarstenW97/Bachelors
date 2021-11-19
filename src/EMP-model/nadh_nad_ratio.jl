@@ -85,6 +85,7 @@ f = plot_proteome(x, fracs, fraclabels;
     ylabel="Relative abundance",
     xscale=log10,
 )
+# FileIO.save("nadhnadtest.pdf", f)
 
 #=
 Plot upper glycolysis metabolites
@@ -118,13 +119,13 @@ f = plot_proteome(x, fracs, fraclabels;
 Plot Gibbs dissipation of reactions in upper glycolysis
 =#
 fracs = hcat([dg_pts.*v_pts, dg_pgi .* v_pgi, dg_pfk .* v_pfk, dg_fba .*v_fba, dg_tpi .* v_tpi, dg_gapd .* v_gapd]...)
-fracs = hcat([dg_pts, dg_pgi, dg_pfk, dg_fba, dg_tpi, dg_gapd]...)
+# fracs = hcat([dg_pts, dg_pgi, dg_pfk, dg_fba, dg_tpi, dg_gapd]...)
 fraclabels = ["pts", "pgi", "pfk", "fba", "tpi", "gapd"]
 x = exp.(nadh)./exp.(nad)
 
 f = plot_proteome(x, fracs, fraclabels;
-    legendlabel="Metabolites",
+    legendlabel="Reaction",
     xlabel="NADH/NAD ratio",
-    ylabel="Relative abundance",
+    ylabel="Relative Gibbs dissipation",
     xscale=log10,
 )

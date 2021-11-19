@@ -118,13 +118,13 @@ f = plot_proteome(x, fracs, fraclabels;
 Plot Gibbs dissipation of reactions in upper glycolysis
 =#
 fracs = hcat([dg_pts.*v_pts, dg_pgi .* v_pgi, dg_pfk .* v_pfk, dg_fba .*v_fba, dg_tpi .* v_tpi, dg_gapd .* v_gapd]...)
-fracs = hcat([dg_pts, dg_pgi, dg_pfk, dg_fba, dg_tpi, dg_gapd]...)
+# fracs = hcat([dg_pts, dg_pgi, dg_pfk, dg_fba, dg_tpi, dg_gapd]...)
 fraclabels = ["pts", "pgi", "pfk", "fba", "tpi", "gapd"]
 x = exp.(atp)./exp.(adp)
 
 f = plot_proteome(x, fracs, fraclabels;
-    legendlabel="Metabolites",
+    legendlabel="Reaction",
     xlabel="ATP/ADP ratio",
-    ylabel="Relative abundance",
+    ylabel="Relative Gibbs dissipation",
     xscale=log10,
 )
