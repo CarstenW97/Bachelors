@@ -32,7 +32,7 @@ ratio_ub = 10
         ac_ext = 1e-16,
         etoh_ext = 1e-4,
         atp_adp_ratio = atp_adp_ratio,
-        nadh_nad_ratio = 0.2,
+        # nadh_nad_ratio = -1, # unconstrained
         num_ms = 10,
     )
 
@@ -103,8 +103,8 @@ f = plot_proteome(x, fracs, fraclabels;
 #=
 Plot lower glycolysis metabolites
 =#
-fracs = exp.(hcat([pg3, pg2, pep, accoa]...))
-fraclabels = ["pg3", "pg2", "pep", "accoa"]
+fracs = exp.(hcat([pg3, pg2, pep]...))
+fraclabels = ["pg3", "pg2", "pep"]
 x = exp.(atp)./exp.(adp)
 
 f = plot_proteome(x, fracs, fraclabels;

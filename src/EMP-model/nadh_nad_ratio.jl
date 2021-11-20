@@ -31,7 +31,7 @@ ratio_ub = 10
         nh4_ext = 10e-3,
         ac_ext = 1e-16,
         etoh_ext = 1e-4,
-        atp_adp_ratio = 10.0,
+        # atp_adp_ratio = -1, # unconstrained
         nadh_nad_ratio = nadh_nad_ratio,
         num_ms = 10,
     )

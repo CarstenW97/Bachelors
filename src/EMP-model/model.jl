@@ -12,8 +12,9 @@ function gln_model(;
     formate_ext = 1e-4,
     proteome = 0.05,
     num_ms = 20,
-    atp_adp_ratio = 10,
-    nadh_nad_ratio = 0.2,
+    atp_adp_ratio = -1,
+    nadh_nad_ratio = -1,
+    silence=true,
 )
 
     gln_model = Model(
@@ -23,9 +24,9 @@ function gln_model(;
             "ms_maxsolves" => num_ms,
         ),
     )
-
-    JuMP.set_silent(gln_model)
-
+    if silence
+        JuMP.set_silent(gln_model)
+    end
     # Thermodynamic function
     thermo_factor(x) = tanh(-0.7 * x) # x = ΔrG/RT
     register(gln_model, :thermo_factor, 1, thermo_factor; autodiff = true)
@@ -33,12 +34,13 @@ function gln_model(;
     # Bounds
     LB_enz = 0.0 # [g enz / g DW cell]
     UB_enz = proteome # [g enz / g DW cell]
-    LB_met = log(1e-9) # [log(1 nM)]
-    UB_met = log(100e-3) # [log(100 mM)]
+    LB_met = log(1e-9) # [log(M)]
+    UB_met = log(100e-3) # [log(M)]
     LB_v = -1 # [mmol/gDW/h]
     UB_v = 100 # [mmol/gDW/h]
     LB_dg = -80 # [kJ/mol]
     UB_dg = 1 # [kJ/mol]
+    mf = 4.0 # metabolite factor
 
     @variables gln_model begin
         0 <= mu <= UB_v # gln production rate
@@ -80,33 +82,57 @@ function gln_model(;
         # Metabolite concentrations [log(M)]
         LB_met <= g6p <= UB_met
         LB_met <= f6p <= UB_met
-        LB_met <= fdp <= UB_met
-        LB_met <= dhap <= UB_met
-        LB_met <= g3p <= UB_met
         LB_met <= dpg13 <= UB_met
         LB_met <= pg3 <= UB_met
         LB_met <= pg2 <= UB_met
-        LB_met <= pep <= UB_met
         LB_met <= pyr <= UB_met
         LB_met <= lac <= UB_met
-        LB_met <= accoa <= UB_met
         LB_met <= oaa <= UB_met
-        LB_met <= cit <= UB_met
         LB_met <= acon <= UB_met
         LB_met <= icit <= UB_met
-        LB_met <= akg <= UB_met
         LB_met <= nh4 <= UB_met
-        LB_met <= glu <= UB_met
-        LB_met <= gln <= UB_met
-        LB_met <= adp <= UB_met
-        LB_met <= atp <= UB_met
-        LB_met <= nad <= UB_met
-        LB_met <= nadh <= UB_met
         LB_met <= acetald <= UB_met
         LB_met <= etoh <= UB_met
         LB_met <= actp <= UB_met
         LB_met <= ac <= UB_met
         LB_met <= formate <= UB_met
+
+        LB_met <= pep <= UB_met
+        # log(1/mf * 1.8e-4) <= pep <= log(mf * 1.8e-4)
+
+        LB_met <= dhap <= UB_met
+        # log(1/mf * 3.7e-4) <= dhap <= log(mf * 3.7e-4)
+
+        LB_met <= akg <= UB_met
+        # log(1/mf * 4.4e-4) <= akg <= log(mf * 4.4e-4)
+
+        LB_met <= accoa <= UB_met
+        # log(1/mf * 6.1e-4) <= accoa <= log(mf * 6.1e-4)
+
+        LB_met <= g3p <= UB_met
+        # log(1/mf * 1.5e-3) <= g3p <= log(mf * 1.5e-3)
+
+        LB_met <= cit <= UB_met
+        # log(1/mf * 2.0e-3) <= cit <= log(mf * 2.0e-3)
+
+        LB_met <= gln <= UB_met
+        # log(1/mf * 3.8e-3) <= gln <= log(mf * 3.8e-3)
+
+        LB_met <= fdp <= UB_met
+        # log(1/mf * 1.5e-2) <= fdp <= log(mf * 1.5e-2)
+
+        LB_met <= glu <= UB_met
+        # log(1/mf * 9.6e-2) <= glu <= log(mf * 9.6e-2)
+
+        # cofactors
+        LB_met <= adp <= UB_met
+        # log(mf * 5.6e-4) <= adp <= log(mf * 5.6e-4)
+        LB_met <= atp <= UB_met
+        # log(1/mf * 9.6e-3) <= atp <= log(mf * 9.6e-3)
+        LB_met <= nad <= UB_met
+        # log(1/mf * 2.6e-3) <= nad <= log(mf * 2.6e-3)
+        LB_met <= nadh <= UB_met
+        # log(mf * 8.3e-5) <= nadh <= log(mf * 8.3e-5)
 
         # Fluxes [mmol/gDW/h]
         LB_v <= v_pts <= UB_v
@@ -380,10 +406,14 @@ function gln_model(;
         act +
         pfl +
         fort <= proteome
+    end
 
-        # set ATP/ADP ratio NB: don't set the concentration bounds so that the ratio is not possible
-        atp == log(atp_adp_ratio) + adp
-        nadh == log(nadh_nad_ratio) + nad
+    if atp_adp_ratio > 0
+        @constraint(gln_model, atp == log(atp_adp_ratio) + adp)
+    end
+
+    if nadh_nad_ratio > 0
+        @constraint(gln_model, nadh == log(nadh_nad_ratio) + nad)
     end
 
     return gln_model
