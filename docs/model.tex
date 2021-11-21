@@ -5,7 +5,7 @@ This thesis project consists of 30 reaction including the EMP glycolysis, glutam
     \centering
     \includegraphics[width=\textwidth]{imgs/model_map.PNG}
     \caption{Schematic of the reaction pathways that make up the model used in this project, showing all reactions, metabolites and cofactors.}
-    \label{fig:SActive}
+    \label{fig:model_map}
 \end{figure}
 
 The flux equations for the model are based on \ref{eq:thermokinetic_flux_forward}, meaning substrate saturation was assumed. This leaves the katalytic constants, enzyme concetration and thermodynamics as the impacting variables.
@@ -17,6 +17,7 @@ For reactions the dG values were calculated with the the dG0 for the reactions, 
 
 With the gas constant, temperature and dG0 being constant values the change in the thermodynamic term comes from changes in substrate and product concentrations. 
 
+The objective to maximize in the model was the glutamine synthesis as a stand in for the growth rate of the cell. Glutamine was chosen because it is a precursor to many other amino acids as well as a substrate for other metabolic reactions that are important for cell growth.
 It was assumed that most reactions can only go in a forward direction to simplify the model. 
 The protome of the system is limited by a density constraint simulating the limited space of a cell. With that no singular enzyme concentration could not exceed a set upper boundary, while also contraining the complete proteome with this limit.
 Further the metabolites, fluxes and the dG values were bound, with these boundries being set to be comparable to values found in vivo. 
@@ -25,29 +26,86 @@ The base model shows that under a changing ratio of ATP to ADP the proteome stay
 \begin{figure}[H]
     \centering
     \includegraphics[width=\textwidth]{imgs/EMP-model/Upper_Glycolysis_Proteome_ATP_ADP.pdf}
-    \caption{Concentrations of the enzymes in the upper glycolysis under the change in ATP/ADP ratio from 0.1 M to 10 M.}
+    \caption{Concentrations of the enzymes in the upper glycolysis under the change in ATP/ADP ratio from 0.1 M to 10.0 M.}
     \label{fig:proteome_upper_atp}
 \end{figure}
 
 \begin{figure}[H]
     \centering
     \includegraphics[width=\textwidth]{imgs/EMP-model/Lower_Glycolysis_Proteome_ATP_ADP.pdf}
-    \caption{Concentrations of the enzymes in the lower glycolysis under the change in ATP/ADP ratio from 0.1 M to 10 M.}
+    \caption{Concentrations of the enzymes in the lower glycolysis under the change in ATP/ADP ratio from 0.1 M to 10.0 M.}
     \label{fig:proteome_lower_atp}
 \end{figure}
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=\textwidth]{imgs/EMP-model/Upper_Glycolysis_Metabolites-ATP_ADP.pdf}
-    \cation{Metabolite concentrations of the upper glycolysis over the change of ATP/ADP ratio from 0.1 M to 10 M.}
+    \includegraphics[width=\textwidth]{imgs/EMP-model/Upper_Glycolysis_Metabolites_ATP_ADP.pdf}
+    \cation{Metabolite concentrations of the upper glycolysis over the change of ATP/ADP ratio from 0.1 M to 10.0 M.}
     \label{fig:metabolites_upper_atp}
 \end
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=\textwidth]{imgs/EMP-model/Lower_Glycolysis_Metabolites-ATP_ADP.pdf}
-    \cation{Metabolite concentrations of the lower glycolysis over the change of ATP/ADP ratio from 0.1 M to 10 M.}
+    \includegraphics[width=\textwidth]{imgs/EMP-model/Lower_Glycolysis_Metabolites_ATP_ADP.pdf}
+    \cation{Metabolite concentrations of the lower glycolysis over the change of ATP/ADP ratio from 0.1 M to 10.0 M.}
     \label{fig:metabolites_lower_atp}
 \end
-
  
+The relatively constant proteome can be explained by the big changes in metabolite concentrations. With these concentration having a direct effect on the termodynamic term of the flux calculation, the fluxes still change but only due to the thermodynamic term. Thus the fluxes will be adjusted to the new conditions without the need for the system to produce or destroy any enzymes. In a cell this would also make sense, due to the fact that the synthesis of enzymes is expensive, while using or importing/exporting more metabolites to change the fluxes of reactions has a similar effect with less cost to the cell.
+This conection can be seen in \ref{fig:upper_fluxes_atp} which shows that the fluxes for the ractions stay the same even under this change in ATP/ADP ratio.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{imgs/EMP-model/Upper_Glycolysis_Fluxes_ATP_ADP.pdf}
+    \caption{Plot of the change in fluxes of the upper glycolysis reactions due to the change in ATP/ADP ratio.}
+    \label{fig:upper_fluxes_atp}
+\end{figure}
+
+This effect can not only be seen when looking at a change in the ATP/ADP ratio but also for a change in the ratio of NADH/NAD (\ref{fig:upper_fluxs_nadh}).
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{imgs/EMP-model/Upper_Glycolysis_Fluxes_ATP_ADP.pdf}
+    \caption{Plot of the change in fluxes of the upper glycolysis reactions due to the change in NADH/NAD ratio from 0.05 M to 10.0 M.}
+    \label{fig:upper_fluxes_nadh}
+\end{figure}
+
+Similarly the metabolite concentrations for this ratio change also show a decline though it sets in later for the upper glycolysis (\ref{fig:metabolites_upper_nadh}) and a smoother decline in lower glycolysis metabolites (\ref{fig:metabolites_lower_nadh}).
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{imgs/EMP-model/Upper_Glycolysis_Metabolites_NADH_NAD.pdf}
+    \cation{Metabolite concentrations of the upper glycolysis over the change of NADH/NAD ratio from 0.05 M to 10.0 M.}
+    \label{fig:metabolites_upper_nadh}
+\end
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{imgs/EMP-model/Lower_Glycolysis_Metabolites_NADH_NAD.pdf}
+    \cation{Metabolite concentrations of the lower glycolysis over the change of NADH/NAD ratio from 0.05 M to 10.0 M.}
+    \label{fig:metabolites_lower_nadh}
+\end
+
+Both these ratio changes show different behavior when the system is subjected to a change in extracellular concentrations, with the ATP/ADP ration being mostly uneffected by all of these concenrations. The NADH/NAD ratio does show quite drastic changes when for example the acetate concentration is changed, shown in \ref{fig:ratio_change_ac}. This behavior to the change in acetate can be explained with the fact that an increased extracellular acetate concentration leads to a higher rate of import. Due to the fact that the acetate is turned into Acetyl-CoA other metabolites that are turned into Acetyl-CoA under the use of NAD are needed less. 
+Subsequently an increase for a substrate that needs NAD to be turned into Acetyl-CoA leads to an increase in the NADH/NAD ratio, which can be seen when increasing the extracallular concentration of ethanol form 1e-5 mol to 1e-7 mol (\ref{fig:ratio_change_ethanol}).
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{imgs/EMP-model/Concentration_changes/Ratio_change_Acetate.pdf}
+    \cation{Change of the ATP/ADP and NADH/NAD ratios when the acetate concentration is increased from 1e-17 mol to 1e-15 mol.}
+    \label{fig:ratio_change_ac}
+\end
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{imgs/EMP-model/Concentration_changes/Ratio_change_Ethanol.pdf}
+    \cation{Change of the ATP/ADP and NADH/NAD ratios when the ethanol concentration is changed.}
+    \label{fig:ratio_change_ethanol}
+\end
+
+When looking at the increase in an extracellular concentration that is not directly conneted to reactions that need one of the cofactors NADH, NAD, ATP or ADP we can see that their ratios are mostly unaffected by this concentration change. This can be seen on the example of NH4 which is only relevant in the glutamate and glutamine synthesis reactions (\ref{fig:model_map}).
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{imgs/EMP-model/Concentration_changes/Ratio_change_NH4.pdf}
+    \cation{Change of the ATP/ADP and NADH/NAD ratios when the NH4 concentration is changed in a range from 0.001 mol to 0.1 mol.}
+    \label{fig:ratio_change_nh4}
+\end
+The small decerease in both their ratios can be explained with the fact that with a higher concentration of NH4 the glutamine reactions is less restricted by NH4. That also means the reaction can happen faster if the other metabolites are suffeciently supplied. Due to the fact that the glutamine synthesis is the objective to maximize in the model this will lead to a higher rate of through put for the proceeding reactions. With this a higher amount of ATP is necessary increasing the ADP concentration and lowering the ATP/ADP ration. Similarly more NAD is needed, which means the maintenance reaction that turns NADH into NAD happens more frequently lowering the NADH concentration and thus the ratio.

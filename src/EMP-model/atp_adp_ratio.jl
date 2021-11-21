@@ -4,7 +4,7 @@ using ProgressMeter
 include(joinpath("src", "EMP-model", "model.jl"))
 import .GlnModel
 
-imgpath = joinpath("docs", "imgs", "EMP-model", "dG_FBA")
+imgpath = joinpath("docs", "imgs", "EMP-model")
 
 #=
 Warm up problem to get all the symbols in the model.
@@ -203,3 +203,19 @@ f = plot_proteome(x, fracs, fraclabels;
 )
 
 FileIO.save(joinpath(imgpath, "Remaining_Proteome_ATP_ADP.pdf"), f)
+
+#=
+Plot Fluxes of reactions in upper glycolysis
+=#
+fracs = hcat([v_pts,v_pgi, v_pfk, v_fba, v_tpi, v_gapd]...)
+fraclabels = ["v_pts", "v_pgi", "v_pfk", "v_fba", "v_tpi", "v_gapd"]
+x = exp.(atp)./exp.(adp)
+
+f = plot_proteome(x, fracs, fraclabels;
+    legendlabel="Reaction",
+    xlabel="ATP/ADP ratio",
+    ylabel="Relative Gibbs dissipation",
+    xscale=log10,
+)
+
+FileIO.save(joinpath(imgpath, "Upper_Glycolysis_Fluxes_ATP_ADP.pdf"), f)

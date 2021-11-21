@@ -203,3 +203,19 @@ f = plot_proteome(x, fracs, fraclabels;
 )
 
 FileIO.save(joinpath(imgpath, "Remaining_Proteome_NADH_NAD.pdf"), f)
+
+#=
+Plot Fluxes of reactions in upper glycolysis
+=#
+fracs = hcat([v_pts,v_pgi, v_pfk, v_fba, v_tpi, v_gapd]...)
+fraclabels = ["v_pts", "v_pgi", "v_pfk", "v_fba", "v_tpi", "v_gapd"]
+x = exp.(nadh)./exp.(nad)
+
+f = plot_proteome(x, fracs, fraclabels;
+    legendlabel="Reaction",
+    xlabel="NADH/NAD ratio",
+    ylabel="Relative Gibbs dissipation",
+    xscale=log10,
+)
+
+FileIO.save(joinpath(imgpath, "Upper_Glycolysis_Fluxes_NADH_NAD.pdf"), f)

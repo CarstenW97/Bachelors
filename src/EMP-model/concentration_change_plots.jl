@@ -23,7 +23,7 @@ end
 prev_sol=Dict{Symbol, Float64}() # a variable to store the previous solution
 
 con_lb = 1e-5
-con_ub = 1e-3
+con_ub = 1e-7
 @showprogress for var in range(log(con_lb); stop=log(con_ub), length=20)
     etoh_ext = exp(var)
 
