@@ -1,0 +1,53 @@
+\section{Project model}
+The main goal with the model was the investigation of thermodynamics on the proteome. 
+This thesis project consists of 30 reaction including the EMP glycolysis, glutamine synthesis, import and export of metabolites as well as as maintanace reactions, shown in \ref{fig:model_map}. 
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{imgs/model_map.PNG}
+    \caption{Schematic of the reaction pathways that make up the model used in this project, showing all reactions, metabolites and cofactors.}
+    \label{fig:SActive}
+\end{figure}
+
+The flux equations for the model are based on \ref{eq:thermokinetic_flux_forward}, meaning substrate saturation was assumed. This leaves the katalytic constants, enzyme concetration and thermodynamics as the impacting variables.
+For reactions the dG values were calculated with the the dG0 for the reactions, the gas constant, temperature and the product and substarte concentrations.
+\begin{equation}
+    dG == dG0 + RT * (Products - Substrate)
+    \label{eq:general_dG}
+\end{equation}
+
+With the gas constant, temperature and dG0 being constant values the change in the thermodynamic term comes from changes in substrate and product concentrations. 
+
+It was assumed that most reactions can only go in a forward direction to simplify the model. 
+The protome of the system is limited by a density constraint simulating the limited space of a cell. With that no singular enzyme concentration could not exceed a set upper boundary, while also contraining the complete proteome with this limit.
+Further the metabolites, fluxes and the dG values were bound, with these boundries being set to be comparable to values found in vivo. 
+
+The base model shows that under a changing ratio of ATP to ADP the proteome stays overall consinstent, with only slight increases and decreases in a few enzymes (see \ref{fig:proteome_upper_atp} and \ref{fig:proteome_lower_atp}). The metabolite concentations change more drametically due to the ratio change, which are shown in \ref{fig:metabolites_upper_atp} and \ref{fig:metabolites_lower_atp}. 
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{imgs/EMP-model/Upper_Glycolysis_Proteome_ATP_ADP.pdf}
+    \caption{Concentrations of the enzymes in the upper glycolysis under the change in ATP/ADP ratio from 0.1 M to 10 M.}
+    \label{fig:proteome_upper_atp}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{imgs/EMP-model/Lower_Glycolysis_Proteome_ATP_ADP.pdf}
+    \caption{Concentrations of the enzymes in the lower glycolysis under the change in ATP/ADP ratio from 0.1 M to 10 M.}
+    \label{fig:proteome_lower_atp}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{imgs/EMP-model/Upper_Glycolysis_Metabolites-ATP_ADP.pdf}
+    \cation{Metabolite concentrations of the upper glycolysis over the change of ATP/ADP ratio from 0.1 M to 10 M.}
+    \label{fig:metabolites_upper_atp}
+\end
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{imgs/EMP-model/Lower_Glycolysis_Metabolites-ATP_ADP.pdf}
+    \cation{Metabolite concentrations of the lower glycolysis over the change of ATP/ADP ratio from 0.1 M to 10 M.}
+    \label{fig:metabolites_lower_atp}
+\end
+
+ 

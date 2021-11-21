@@ -166,7 +166,7 @@ Defining enthalpy as H $\equiv$ U + PV, the heat transferred to a system can be 
 The second law of thermodynamics deals with entropy. In general the total change in entropy due to a process, as shown in \ref{eq:Thermo_Entropy} can never be negative.
 
 \begin{equation}
-    \fbox \Delta S_total \geq 0}
+    \fbox{\Delta S_total \geq 0}
     \label{eq:Thermo_Entropy}
 \end{equation}
 
@@ -236,11 +236,73 @@ Assuming constant T, \ref{eq:Gibbs_dH} can be written as \ref{eq:Gibbs_dG} . It 
     \label{eq:Gibbs_G}
 \end{equation}
 \begin{equation}
-    dG $\leq$ 0 
+    dG \leq 0 
     \label{eq:Gibbs_dG}
 \end{equation}
 
 Equation \ref{eq:Gibbs_dG} shows that any spontaneous reaction will lead to a decrease of Gibbs free energy if they happen under constant pressure and temperature. Thus $\Delta$G can be used to predict the direction of a reaction.
+
+\section{Transporters}
+Transporters are a group of membrane proteins that facilitate the diffusion/transport of molecules across the lipid membrane of cells. These proteins can be broadly categorized into three groups, passive, primary active and secondary active. The difference between these is what process they utilize to power the substrate transport. Passively substrate can only flow from a high concentration to a lower one, while active transport can work against these gradients with the use of energy
+
+Small, lipophilic molecules can cross the lipid membrane by simple diffusion along the concentration gradient. For bigger and hydrophilic molecules this is not possible, thus cell have two types of passive transporter to allow those molecules to diffuse. 
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{imgs/Passive.pdf}
+    \caption{A scheme of the three types of passive transport. from right to left: carrier protein, channel protein, simple diffusion. Also shown is the concentration gradient for a substrate.}
+    \label{fig:Passive}
+\end{figure}
+
+One of those are channel proteins which are pores in the membrane. These pores have a hydrophilic inside, providing a substrate nonspecific way inside the cell for hydrophilic molecules. Another protein for passive transport are Carrier proteins. These are substrate specific and work by having that substrate bind to it. This leads to a change in the proteins confirmation pushing the substrate through and opening up on the other side.
+
+The active transport is a way to work around the concentration gradients for molecules. Primary active transporters do that by using the energy released by hydrolysis of ATP to ADP and phosphate. For this the ATP binds to a transporter and when the substrate also binds this leads to a conformation change. Through hat change both the hydrolysis and the transport of the substrate to the other side are forced. The energy released is needed to enact the confirmation change. 
+This kind of transport generally happens either as a uniport where one substrate is transported or as a contraport. A contraport transports two different substrates against their respective gradients in opposite directions.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{imgs/PActive.pdf}
+    \caption{Scheme of primary active transport. Both uniport and contraport as well as the corresponding concentration gradients are shown.}
+    \label{fig:PActive}
+\end{figure}
+
+Secondary active transport is another way to transport a substrate against its concentration gradient. The difference between primary and secondary active transport is that the secondary active transport does not use energy in for of ATP. It uses the coupling of the transport two substrates. one is transported with its gradient the other one against it. For this both of the substrates need to bind to the protein which then leads to a change in conformation. 
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{imgs/SActive.pdf}
+    \caption{Scheme of secondary active transporters. Shown are antiport and symport.}
+    \label{fig:SActive}
+\end{figure}
+
+Secondary active transport can happen as an antiport where the two substrates are transported to opposite side of the membrane. It can also happen as a symport, where both of them are transported to the same side. 
+
+\section{Glycolysis}
+Glycolysis is a cellular reaction chain in which the breakdown of glucose is coupled with the synthesis of the main energy metabolite ATP.
+It consists of 2 part the upper glycolysis and the lower glycolysis. The upper glycolysis splits the C6 glucose into 2 C3 glyceraldehyd by using energy to bind phosphate to the 
+sugars. While the lower glycolysis turns the glyceraldehyd molecules into pyruvate, while recovering ATP.
+The most commonly discussed glycolysis is the Embden-Meyerhof-Parnas (EMP) pathway, due to it being nearly ubiquitous in among eukaryotes \cite{flamholz2012glycotic}.
+In this gycolisis pathway the glucose, a C6 sugar is broken down into 2 C3 units. The product of this reaction chain are 2 pyruvates, 4 ATP and 2 ADP. 
+
+In comparison the Entner–Doudoroff (ED) pathway is a natural alternative glycolysis pathway found in prokaryotes and together with the EMP pathway is the most common glycolysis pathway in bacteria. The general the process is similar to that of the EMP glycolysis, with it breaking down glucose into 2 pyruvates thus sharing the same net reaction (\ref{eq:Glycolysis_net_reaction}).
+
+\begin{equation}
+    D-glucose + n ADP + n P_i \rightarrow 2 Pyruvate + n ATP + n H_2O
+    \label{eq:Glycolysis_net_reaction}
+\end{equation}
+
+The difference occurs in the upper glycolysis reactions and the energy yield of the lower glycolysis. The differing energy yields is a result of the upper glycolysis splitting glucose into 1 glyceraldehyd molecule and one pyruvate. This means only one molecule goes through the lower glycolysis leading to only half the ATP yield, see fig. \ref{fig:glycolysis_scheme}. 
+The two pathways can also differ in the specific amount of NAD/NADH and NADP/NADPH used.
+
+According to \cite{flamholz2012glycotic} the EMP pathway is thermodynamically more constrained than the ED pathway, with some reactions (fructose 1,6-bisphosphate aldolase (fba), triose-phosphate isomerase (tpi), glyceraldehyde 3-phosphate dehydrogenase (gapdh), phosphoglycerate kinase (pgk), and phosphoglycerate mutase (pgm)) acting as thermodynamic bottlenecks. The ED pathway prevents these bottlenecks by replacing unfavorable reactions with more exergonic reactions.
+In comparison the EMP reactions have higher enzyme concentrations to increase the catalytic rate and minimize the impact of the lower thermodynamic driving force. This means the EMP pathway is enzymatically more expensive, which leads to a trade off between cost and ATP yield between the two pathways. 
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{Bachelors Thesis/Resources/glycolysis.pdf}
+    \caption{Schematic of the EMP and Ed pathways, showing upper and lower glycolysis.}
+    \label{fig:glycolysis_scheme}
+\end{figure}
 
 \section{Self replicator model}
 This self replicator model is a coarse grained representation of cellular metabolism. It consists of passive transporters, ribosomes, metabolic enzymes and enzymes for lipid synthesis enzymes. 
@@ -286,38 +348,3 @@ This increase in overall enzyme synthesis by the ribosomes - and thus the growth
     \caption{An increase in growth rate is linked to an increase in ribosome synthesis rate.}
     \label{fig:Figure_3E}
 \end{figure}
-
-\section{Transporters}
-Transporters are a group of membrane proteins that facilitate the diffusion/transport of molecules across the lipid membrane of cells. These proteins can be broadly categorized into three groups, passive, primary active and secondary active. The difference between these is what process they utilize to power the substrate transport. Passively substrate can only flow from a high concentration to a lower one, while active transport can work against these gradients with the use of energy
-
-Small, lipophilic molecules can cross the lipid membrane by simple diffusion along the concentration gradient. For bigger and hydrophilic molecules this is not possible, thus cell have two types of passive transporter to allow those molecules to diffuse. 
-
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=\textwidth]{imgs/Passive.pdf}
-    \caption{A scheme of the three types of passive transport. from right to left: carrier protein, channel protein, simple diffusion. Also shown is the concentration gradient for a substrate.}
-    \label{fig:Passive}
-\end{figure}
-
-One of those are channel proteins which are pores in the membrane. These pores have a hydrophilic inside, providing a substrate nonspecific way inside the cell for hydrophilic molecules. Another protein for passive transport are Carrier proteins. These are substrate specific and work by having that substrate bind to it. This leads to a change in the proteins confirmation pushing the substrate through and opening up on the other side.
-
-The active transport is a way to work around the concentration gradients for molecules. Primary active transporters do that by using the energy released by hydrolysis of ATP to ADP and phosphate. For this the ATP binds to a transporter and when the substrate also binds this leads to a conformation change. Through hat change both the hydrolysis and the transport of the substrate to the other side are forced. The energy released is needed to enact the confirmation change. 
-This kind of transport generally happens either as a uniport where one substrate is transported or as a contraport. A contraport transports two different substrates against their respective gradients in opposite directions.
-
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=\textwidth]{imgs/PActive.pdf}
-    \caption{Scheme of primary active transport. Both uniport and contraport as well as the corresponding concentration gradients are shown.}
-    \label{fig:PActive}
-\end{figure}
-
-Secondary active transport is another way to transport a substrate against its concentration gradient. The difference between primary and secondary active transport is that the secondary active transport does not use energy in for of ATP. It uses the coupling of the transport two substrates. one is transported with its gradient the other one against it. For this both of the substrates need to bind to the protein which then leads to a change in conformation. 
-
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=\textwidth]{imgs/SActive.pdf}
-    \caption{Scheme of secondary active transporters. Shown are antiport and symport.}
-    \label{fig:SActive}
-\end{figure}
-
-Secondary active transport can happen as an antiport where the two substrates are transported to opposite side of the membrane. It can also happen as a symport, where both of them are transported to the same side. 

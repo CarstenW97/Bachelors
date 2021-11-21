@@ -4,6 +4,8 @@ using ProgressMeter
 include(joinpath("src", "EMP-model", "model.jl"))
 import .GlnModel
 
+imgpath = joinpath("docs", "imgs", "EMP-model", "dG_FBA")
+
 #=
 Warm up problem to get all the symbols in the model.
 Create arrays using these symbols as the names.
@@ -86,6 +88,8 @@ f = plot_proteome(x, fracs, fraclabels;
     xscale=log10,
 )
 
+FileIO.save(joinpath(imgpath, "Cofactor_Metabolites_ATP_ADP.pdf"), f)
+
 #=
 Plot upper glycolysis metabolites
 =#
@@ -99,6 +103,8 @@ f = plot_proteome(x, fracs, fraclabels;
     ylabel="Relative abundance",
     xscale=log10,
 )
+
+FileIO.save(joinpath(imgpath, "Upper_Glycolysis_Metabolites_ATP_ADP.pdf"), f)
 
 #=
 Plot lower glycolysis metabolites
@@ -114,6 +120,8 @@ f = plot_proteome(x, fracs, fraclabels;
     xscale=log10,
 )
 
+FileIO.save(joinpath(imgpath, "Lower_Glycolysis_Metabolites_ATP_ADP.pdf"), f)
+
 #=
 Plot Gibbs dissipation of reactions in upper glycolysis
 =#
@@ -128,3 +136,70 @@ f = plot_proteome(x, fracs, fraclabels;
     ylabel="Relative Gibbs dissipation",
     xscale=log10,
 )
+
+FileIO.save(joinpath(imgpath, "Upper_Glycolysis_Gibbs_Dissapation_ATP_ADP.pdf"), f)
+
+
+#=
+Plot upper glycolysis proteome
+=#
+fracs = hcat([pts, pgi, pfk, fba, tpi, gapd]...)
+fraclabels = ["pts", "pgi", "pfk", "fba", "tpi", "gapd"]
+x = exp.(atp)./exp.(adp)
+
+f = plot_proteome(x, fracs, fraclabels;
+    legendlabel="Enzyme",
+    xlabel="ATP/ADP ratio",
+    ylabel="Relative Enzyme concentration",
+    xscale=log10,
+)
+
+FileIO.save(joinpath(imgpath, "Upper_Glycolysis_Proteome_ATP_ADP.pdf"), f)
+
+#=
+Plot lower glycolysis proteome
+=#
+fracs = hcat([pgk, pgm, pyk, eno, ldh]...)
+fraclabels = ["pgk", "pgm", "pyk", "eno", "ldh"]
+x = exp.(atp)./exp.(adp)
+
+f = plot_proteome(x, fracs, fraclabels;
+    legendlabel="Enzyme",
+    xlabel="ATP/ADP ratio",
+    ylabel="Relative Enzyme concentration",
+    xscale=log10,
+)
+
+FileIO.save(joinpath(imgpath, "Lower_Glycolysis_Proteome_ATP_ADP.pdf"), f)
+
+#=
+Plot glutamine synthesis proteome
+=#
+fracs = hcat([ppc, pfl, pdh, cs, aconta, acontb, icdh, gludy, glns]...)
+fraclabels = ["ppc", "pfl", "pdh", "cs", "aconta", "acontb", "icdh", "gludy", "glns"]
+x = exp.(atp)./exp.(adp)
+
+f = plot_proteome(x, fracs, fraclabels;
+    legendlabel="Enzyme",
+    xlabel="ATP/ADP ratio",
+    ylabel="Relative Enzyme concentration",
+    xscale=log10,
+)
+
+FileIO.save(joinpath(imgpath, "Glutamine_synthesis_Proteome_ATP_ADP.pdf"), f)
+
+#=
+Plot remaining proteome (transporters; ethanol -> accoa; acetate -> accoa)
+=#
+fracs = hcat([lact, nh4t, fort, etoht, alcd, acald, act, ackr, ptar]...)
+fraclabels = ["lact", "nh4t", "fort", "etoht", "alcd", "acald", "act", "ackr", "ptar"]
+x = exp.(atp)./exp.(adp)
+
+f = plot_proteome(x, fracs, fraclabels;
+    legendlabel="Enzyme",
+    xlabel="ATP/ADP ratio",
+    ylabel="Relative Enzyme concentration",
+    xscale=log10,
+)
+
+FileIO.save(joinpath(imgpath, "Remaining_Proteome_ATP_ADP.pdf"), f)
