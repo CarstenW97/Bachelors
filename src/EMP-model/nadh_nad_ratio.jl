@@ -24,7 +24,7 @@ prev_sol=Dict{Symbol, Float64}() # a variable to store the previous solution
 
 ratio_lb = 0.05
 ratio_ub = 10
-@showprogress for var in range(log(ratio_lb); stop=log(ratio_ub), length=20)
+@showprogress for var in reverse(range(log(ratio_lb); stop=log(ratio_ub), length=20))
     nadh_nad_ratio = exp(var)
 
     gln_model = GlnModel.gln_model(
@@ -35,7 +35,7 @@ ratio_ub = 10
         etoh_ext = 1e-4,
         # atp_adp_ratio = -1, # unconstrained
         nadh_nad_ratio = nadh_nad_ratio,
-        num_ms = 100,
+        num_ms = 10,
     )
 
     solve_1 = GlnModel.max_mu!(gln_model, prev_sol)

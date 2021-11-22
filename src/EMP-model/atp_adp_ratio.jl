@@ -24,7 +24,7 @@ prev_sol=Dict{Symbol, Float64}() # a variable to store the previous solution
 
 ratio_lb = 0.1
 ratio_ub = 10
-@showprogress for var in range(log(ratio_lb); stop=log(ratio_ub), length=20)
+@showprogress for var in reverse(range(log(ratio_lb); stop=log(ratio_ub), length=20))
     atp_adp_ratio = exp(var)
 
     gln_model = GlnModel.gln_model(

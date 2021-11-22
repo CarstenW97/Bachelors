@@ -6,7 +6,7 @@ import .GlnModel
 
 prev_sol=Dict{Symbol, Float64}() # a variable to store the previous solution
 
-nadh_nad_ratio = 2
+nadh_nad_ratio = 0.1
 
 gln_model = GlnModel.gln_model(
     glc_ext = 50e-3,
@@ -17,6 +17,7 @@ gln_model = GlnModel.gln_model(
     atp_adp_ratio = 10,
     nadh_nad_ratio = nadh_nad_ratio,
     num_ms = 10,
+    silence=false,
 )
 
 solve_1 = GlnModel.max_mu!(gln_model, prev_sol)

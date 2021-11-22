@@ -197,15 +197,6 @@ function gln_model(;
         LB_dg <= dg_alcd <= UB_dg
         LB_dg <= dg_pfl <= UB_dg
         LB_dg <= dg_fort <= UB_dg
-
-        # quick "fix" for the changing concentration plots (only used for those)
-        # glc_e == log(glc_ext)
-        # lac_e == log(lac_ext)
-        # co2 == log(1e-4)
-        # nh4_e == log(nh4_ext)
-        # etoh_e == log(etoh_ext)
-        # ac_e == log(ac_ext)
-        # formate_e == log(formate_ext)
     end
 
     @NLparameters gln_model begin
