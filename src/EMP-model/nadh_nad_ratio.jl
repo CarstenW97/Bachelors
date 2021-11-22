@@ -219,20 +219,3 @@ f = plot_proteome(x, fracs, fraclabels;
 )
 
 FileIO.save(joinpath(imgpath, "Upper_Glycolysis_Fluxes_NADH_NAD.pdf"), f)
-
-###############
-
-fracs = hcat([pts, pgi, pfk, fba, tpi, gapd]...)
-
-fracs = hcat([pts, pgi, pfk, fba, tpi, gapd]...)
-fraclabels = ["pts", "pgi", "pfk", "fba", "tpi", "gapd"]
-x = exp.(nadh)./exp.(nad)
-
-f = plot_proteome(x, fracs, fraclabels;
-    legendlabel="Enzyme",
-    xlabel="NADH/NAD ratio",
-    ylabel="Relative Enzyme concentration",
-    xscale=log10,
-)
-
-FileIO.save(joinpath(imgpath, "Test_NADH_NAD.pdf"), f)
