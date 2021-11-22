@@ -109,3 +109,22 @@ When looking at the increase in an extracellular concentration that is not direc
     \label{fig:ratio_change_nh4}
 \end
 The small decerease in both their ratios can be explained with the fact that with a higher concentration of NH4 the glutamine reactions is less restricted by NH4. That also means the reaction can happen faster if the other metabolites are suffeciently supplied. Due to the fact that the glutamine synthesis is the objective to maximize in the model this will lead to a higher rate of through put for the proceeding reactions. With this a higher amount of ATP is necessary increasing the ADP concentration and lowering the ATP/ADP ration. Similarly more NAD is needed, which means the maintenance reaction that turns NADH into NAD happens more frequently lowering the NADH concentration and thus the ratio.
+
+To investigate the effect of the termodynamic term on the system we can also look at the effect that a fixed dG has. If only the ATP/ADP ratio is varied the dG value of the FBA reaction was around -3.0 kJ/mol. Fixing this value as -10 kJ/mol has little impact on the proteome and metabolite concentrations when varying the ATP/ADP ratio as before. It does have an impact on the concentration of the cofactors, with ATP and ADP concentrations being near zero (\ref{fig:cofactor_fba_atp}). In comparison the base model shows a gradual shift in ATP and ADP concentrations, with ADP derasing and ATP increasing with the increase in their ratio (\ref{fig:cofactor_atp}).
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{imgs/EMP-model/dG_FBA/Cofactor_Metabolites_ATP_ADP.pdf}
+    \cation{Cofactor concentration change under fixed dG for the FBA reaction at -10 kJ/mol and a change in ATP/ADP ratio from 0.1 M to 10 M.}
+    \label{fig:cofactor_fba_atp}
+\end
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{imgs/EMP-model/Cofactor_Metabolites_ATP_ADP.pdf}
+    \cation{Cofactor concentration change under a change in ATP/ADP ratio from 0.1 M to 10 M.}
+    \label{fig:cofactor_atp}
+\end
+
+This difference in concenrations can be explained with the fact that FBA is one of the bottelneck reactions in the EMP glycolysis. When this bottleneck is reduced by this increase in dG the following reactions happen at a greater rate meaning more ATP and ADP are required.
+When varying the NADH/NAD ratio with this fixed dG value for the FBA reaction the difference to the model without a fixed value is less pronounced. The overall trend is the same, but the change in concentration is higher.
+ 
