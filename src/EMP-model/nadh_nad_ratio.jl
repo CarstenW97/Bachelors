@@ -4,7 +4,7 @@ using ProgressMeter
 include(joinpath("src", "EMP-model", "model.jl"))
 import .GlnModel
 
-imgpath = joinpath("docs", "imgs", "EMP-model", "dG_FBA")
+imgpath = joinpath("docs", "imgs", "EMP-model")
 
 #=
 Warm up problem to get all the symbols in the model.
@@ -35,7 +35,7 @@ ratio_ub = 10
         etoh_ext = 1e-4,
         # atp_adp_ratio = -1, # unconstrained
         nadh_nad_ratio = nadh_nad_ratio,
-        num_ms = 10,
+        num_ms = 100,
     )
 
     solve_1 = GlnModel.max_mu!(gln_model, prev_sol)
@@ -219,3 +219,20 @@ f = plot_proteome(x, fracs, fraclabels;
 )
 
 FileIO.save(joinpath(imgpath, "Upper_Glycolysis_Fluxes_NADH_NAD.pdf"), f)
+
+###############
+
+fracs = hcat([pts, pgi, pfk, fba, tpi, gapd]...)
+
+fracs = hcat([pts, pgi, pfk, fba, tpi, gapd]...)
+fraclabels = ["pts", "pgi", "pfk", "fba", "tpi", "gapd"]
+x = exp.(nadh)./exp.(nad)
+
+f = plot_proteome(x, fracs, fraclabels;
+    legendlabel="Enzyme",
+    xlabel="NADH/NAD ratio",
+    ylabel="Relative Enzyme concentration",
+    xscale=log10,
+)
+
+FileIO.save(joinpath(imgpath, "Test_NADH_NAD.pdf"), f)
