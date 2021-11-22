@@ -4,7 +4,7 @@ using ProgressMeter
 include(joinpath("src", "EMP-model", "model.jl"))
 import .GlnModel
 
-imgpath = joinpath("docs", "imgs", "EMP-model")
+imgpath = joinpath("docs", "imgs", "EMP-model", "All_Cofactors_fixed")
 
 #=
 Warm up problem to get all the symbols in the model.
@@ -214,8 +214,24 @@ x = exp.(nadh)./exp.(nad)
 f = plot_proteome(x, fracs, fraclabels;
     legendlabel="Reaction",
     xlabel="NADH/NAD ratio",
-    ylabel="Relative Gibbs dissipation",
+    ylabel="Relative Flux",
     xscale=log10,
 )
 
 FileIO.save(joinpath(imgpath, "Upper_Glycolysis_Fluxes_NADH_NAD.pdf"), f)
+
+#=
+Plot Fluxes of reactions in glutamine synthesis
+=#
+fracs = hcat([v_ppc, v_pfl, v_pdh, v_cs, v_aconta, v_aconta, v_icdh, v_gludy, v_glns]...)
+fraclabels = ["v_ppc", "v_pfl", "v_pdh", "v_cs", "v_aconta", "v_acontb", "v_icdh", "v_gludy", "v_glns"]
+x = exp.(nadh)./exp.(nad)
+
+f = plot_proteome(x, fracs, fraclabels;
+    legendlabel="Reaction",
+    xlabel="NADH/NAD ratio",
+    ylabel="Relative Flux",
+    xscale=log10,
+)
+
+FileIO.save(joinpath(imgpath, "Glutamine_synthesis_Fluxes_NADH_NAD.pdf"), f)

@@ -20,7 +20,7 @@ With the gas constant, temperature and dG0 being constant values the change in t
 The objective to maximize in the model was the glutamine synthesis as a stand in for the growth rate of the cell. Glutamine was chosen because it is a precursor to many other amino acids as well as a substrate for other metabolic reactions that are important for cell growth.
 It was assumed that most reactions can only go in a forward direction to simplify the model. 
 The protome of the system is limited by a density constraint simulating the limited space of a cell. With that no singular enzyme concentration could not exceed a set upper boundary, while also contraining the complete proteome with this limit.
-Further the metabolites, fluxes and the dG values were bound, with these boundries being set to be  comparable to ones found in vivo. 
+For the baseline model no intracellular concentrations, fluxes or dG of reaction were fixed to a specific value. 
 
 The base model shows that under a changing ratio of ATP to ADP the proteome stays overall consinstent, with only slight increases and decreases in a few enzymes (see \ref{fig:proteome_upper_atp} and \ref{fig:proteome_lower_atp}). The metabolite concentations change more drametically due to the ratio change, which are shown in \ref{fig:metabolites_upper_atp} and \ref{fig:metabolites_lower_atp}. 
 \begin{figure}[H]
@@ -50,7 +50,37 @@ The base model shows that under a changing ratio of ATP to ADP the proteome stay
     \cation{Metabolite concentrations of the lower glycolysis over the change of ATP/ADP ratio from 0.1 M to 10.0 M.}
     \label{fig:metabolites_lower_atp}
 \end
- 
+
+Similarly the metabolite concentrations for the NADH/NAD ratio change in a comparabble way to the ones seen for the ATP/ADP ratio. The change seen for the upper glycolysis (\ref{fig:metabolites_upper_nadh}) is less rapid and the concentrations of g6p and f6p do not drop as low as seen in \ref{metabolites_upper_atp}. For the lower glycolysis the metabolite concentration change (\ref{fig:metabolites_lower_nadh}) is smoother for the NADH/NAD ratio when compared to that of the ATP/ADP ratio (\ref{fig:metabolites_lower_atp}), but the genreal behavior is similar.
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{imgs/EMP-model/Upper_Glycolysis_Metabolites_NADH_NAD.pdf}
+    \cation{Metabolite concentrations of the upper glycolysis over the change of NADH/NAD ratio from 0.05 M to 10.0 M.}
+    \label{fig:metabolites_upper_nadh}
+\end
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{imgs/EMP-model/Lower_Glycolysis_Metabolites_NADH_NAD.pdf}
+    \cation{Metabolite concentrations of the lower glycolysis over the change of NADH/NAD ratio from 0.05 M to 10.0 M.}
+    \label{fig:metabolites_lower_nadh}
+\end 
+
+AS it was seen for the proteome of the ATP/ADP ratio the proteome stays relatively constant over all different values for the NADH/NAD ratio. The relative concentrations are for both the upper and lower glycolysis are even comparable to the ones seen in \ref{fig:proteome_upper_atp} and \ref{fig:proteome_lower_atp}.
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{imgs/EMP-model/Upper_Glycolysis_Proteome_NADH_NAD.pdf}
+    \caption{Concentrations of the enzymes in the upper glycolysis under the change in ATP/ADP ratio from 0.1 M to 10.0 M.}
+    \label{fig:proteome_upper_nadh}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{imgs/EMP-model/Lower_Glycolysis_Proteome_NADH_NAD.pdf}
+    \caption{Concentrations of the enzymes in the lower glycolysis under the change in ATP/ADP ratio from 0.1 M to 10.0 M.}
+    \label{fig:proteome_lower_nadh}
+\end{figure}
+
 The relatively constant proteome can be explained by the big changes in metabolite concentrations. With these concentration having a direct effect on the termodynamic term of the flux calculation, the fluxes still change but only due to the thermodynamic term. Thus the fluxes will be adjusted to the new conditions without the need for the system to produce or destroy any enzymes. In a cell this would also make sense, due to the fact that the synthesis of enzymes is expensive, while using or importing/exporting more metabolites to change the fluxes of reactions has a similar effect with less cost to the cell.
 This conection can be seen in \ref{fig:upper_fluxes_atp} which shows that the fluxes for the ractions stay the same even under this change in ATP/ADP ratio.
 
@@ -69,41 +99,26 @@ This effect can not only be seen when looking at a change in the ATP/ADP ratio b
     \label{fig:upper_fluxes_nadh}
 \end{figure}
 
-Similarly the metabolite concentrations for this ratio change also show a decline though it sets in later for the upper glycolysis (\ref{fig:metabolites_upper_nadh}) and a smoother decline in lower glycolysis metabolites (\ref{fig:metabolites_lower_nadh}).
+These behaiviors are not only observable for the fluxes and concentrations of the glycolysis reactions. They can also be seen if we compare the proteome and fluxes between the ratios for the glutamine synthesis, which means this behaivior is not exclusive to the gycolosis but fundamental to the system.
+In some of these plots not all concentrations are visible, but this is explainable with the fact that those concentrations of enzymes or metabolites or the fluxes are so low that they are comperativly small and don't show up in a graph that only shows relative concentrations.
 
+The trend of a mostly stable relative proteome continues even when the cofactors are fixed, while the matabolite concentrations show a similar behavior to the system without fixed cofactor concentrations. This also has the same effect on the relative fuxes, meaning they do not change as a result. The only thing that shows a difference to the base model are the relative cofactor concentrations themselves, which makes sense, if they are more limited in their range than before that would mean that the ratio between them change. They also show similar changes in cofactor concentrations between themselves, with the plots for fixed ATP (\ref{fig:cofactor_atp_fixed_atp}) and ADP (\ref{fig:cofactor_adp_fixed_atp}) being almost the same, with the slight difference in the NADH concentration maximum. 
+The values to which the cofactors are fixed were taken from \cite{bennett2009absolute}. With these fixed ATP and ADP concentrations the ratio change for NADH/NAD also show generally the same trend, with the ATP concentration being lower when the ATP concentration is fixed. The relative NADH and NAD concentrations resembeling those of the system with fixed ATP and ADP.
 \begin{figure}[H]
     \centering
-    \includegraphics[width=\textwidth]{imgs/EMP-model/Upper_Glycolysis_Metabolites_NADH_NAD.pdf}
-    \cation{Metabolite concentrations of the upper glycolysis over the change of NADH/NAD ratio from 0.05 M to 10.0 M.}
-    \label{fig:metabolites_upper_nadh}
-\end
-
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=\textwidth]{imgs/EMP-model/Lower_Glycolysis_Metabolites_NADH_NAD.pdf}
-    \cation{Metabolite concentrations of the lower glycolysis over the change of NADH/NAD ratio from 0.05 M to 10.0 M.}
-    \label{fig:metabolites_lower_nadh}
-\end
-
-For the change in this ratio we can see that the proteome stays almost constant over all different values for the NADH/NAD ratio. The relative concentrations are for both the upper and lower glycolysis are even comparable to the ones seen in \ref{fig:proteome_upper_atp} and \ref{fig:proteome_lower_atp}.
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=\textwidth]{imgs/EMP-model/Upper_Glycolysis_Proteome_NADH_NAD.pdf}
-    \caption{Concentrations of the enzymes in the upper glycolysis under the change in ATP/ADP ratio from 0.1 M to 10.0 M.}
-    \label{fig:proteome_upper_nadh}
+    \includegraphics[width=\textwidth]{imgs/EMP-model/ATP_fixed/Cofactor_Metabolites_ATP_ADP.pdf}
+    \caption{Change of the Cofactor concentration with a change in ATP/ADP ratio (0.1 M to 10.0 M.) and ADP fixed between 1/4.0 * 9.6e-3 M and 4.0 * 9.6e-3 M.}
+    \label{fig:cofactor_atp_fixed_atp}
 \end{figure}
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=\textwidth]{imgs/EMP-model/Lower_Glycolysis_Proteome_NADH_NAD.pdf}
-    \caption{Concentrations of the enzymes in the lower glycolysis under the change in ATP/ADP ratio from 0.1 M to 10.0 M.}
-    \label{fig:proteome_lower_nadh}
+    \includegraphics[width=\textwidth]{imgs/EMP-model/ADP_fixed/Cofactor_Metabolites_ATP_ADP.pdf}
+    \caption{Change of the Cofactor concentration with a change in ATP/ADP ratio (0.1 M to 10.0 M.) and ADP fixed to 4.0 * 5.6e-4 M.}
+    \label{fig:cofactor_adp_fixed_atp}
 \end{figure}
 
-These behaiviors are not exclusive to the reactions and metabolites of the glycolysis. It can also be seen if we compare the proteome for the glutamine synthesis, which means this behaivior is not exclusive to the gycolosis but fundamental to the system.
-In some of these plots not all concentrations are visible, but this is explainable with the fact that those concentrations of enzymes or metabolites are so low that they are comperativly small and don't show up in a graph that only shows relative concentrations.
-
-
+Comperable to the the system with fixed ATP and ADP, similar trends are seen in when NADH or NAD are fixed. For this NADH was fixed to 4.0 * 8.3e-5 M and the NAD concentration between 1/4.0 * 2.6e-3 M and 4.0 * 2.6e-3 M. Here the general trend is similar, but 
 
 % Both these ratio changes show different behavior when the system is subjected to a change in extracellular concentrations, with the ATP/ADP ration being mostly uneffected by all of these concenrations. The NADH/NAD ratio does show quite drastic changes when for example the acetate concentration is changed, shown in \ref{fig:ratio_change_ac}. This behavior to the change in acetate can be explained with the fact that an increased extracellular acetate concentration leads to a higher rate of import. Due to the fact that the acetate is turned into Acetyl-CoA other metabolites that are turned into Acetyl-CoA under the use of NAD are needed less. 
 % Subsequently an increase for a substrate that needs NAD to be turned into Acetyl-CoA leads to an increase in the NADH/NAD ratio, which can be seen when increasing the extracallular concentration of ethanol form 1e-5 mol to 1e-7 mol (\ref{fig:ratio_change_ethanol}).
