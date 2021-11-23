@@ -4,7 +4,7 @@ using ProgressMeter
 include(joinpath("src", "EMP-model", "model.jl"))
 import .GlnModel
 
-imgpath = joinpath("docs", "imgs", "EMP-model", "All_Cofactors_fixed")
+imgpath = joinpath("docs", "imgs", "EMP-model")
 
 #=
 Warm up problem to get all the symbols in the model.
@@ -223,7 +223,7 @@ FileIO.save(joinpath(imgpath, "Upper_Glycolysis_Fluxes_NADH_NAD.pdf"), f)
 #=
 Plot Fluxes of reactions in glutamine synthesis
 =#
-fracs = hcat([v_ppc, v_pfl, v_pdh, v_cs, v_aconta, v_aconta, v_icdh, v_gludy, v_glns]...)
+fracs = hcat([v_ppc, v_pfl, v_pdh, v_cs, v_aconta, v_acontb, v_icdh, v_gludy, v_glns]...)
 fraclabels = ["v_ppc", "v_pfl", "v_pdh", "v_cs", "v_aconta", "v_acontb", "v_icdh", "v_gludy", "v_glns"]
 x = exp.(nadh)./exp.(nad)
 
@@ -235,3 +235,36 @@ f = plot_proteome(x, fracs, fraclabels;
 )
 
 FileIO.save(joinpath(imgpath, "Glutamine_synthesis_Fluxes_NADH_NAD.pdf"), f)
+
+#=
+Plot dG of reactions in upper glycolysis
+=#
+
+fracs = hcat([dg_pts, dg_pgi, dg_pfk, dg_fba, dg_tpi, dg_gapd]...)
+fraclabels = ["dG_pts", "dG_pgi", "dG_pfk", "dG_fba", "dG_tpi", "dG_gapd"]
+x = exp.(nadh)./exp.(nad)
+
+f = plot_proteome(x, fracs, fraclabels;
+    legendlabel="Reaction",
+    xlabel="NADH/NAD ratio",
+    ylabel="Relative dG of reaction",
+    xscale=log10,
+)
+
+FileIO.save(joinpath(imgpath, "Upper_Glycolysis_dG_NADH_NAD.pdf"), f)
+
+#=
+Plot dG of reactions in glycolysis synthesis
+=#
+fracs = hcat([dg_ppc, dg_pfl, dg_pdh, dg_cs, dg_aconta, dg_acontb, dg_icdh, dg_gludy, dg_glns]...)
+fraclabels = ["dg_ppc", "dg_pfl", "dg_pdh", "dg_cs", "dg_aconta", "dg_aconta", "dg_icdh", "dg_gludy", "dg_glns"]
+x = exp.(nadh)./exp.(nad)
+
+f = plot_proteome(x, fracs, fraclabels;
+    legendlabel="Reaction",
+    xlabel="NADH/NAD ratio",
+    ylabel="Relative dG of reaction",
+    xscale=log10,
+)
+
+FileIO.save(joinpath(imgpath, "Glutamine_synthesis_dG_NADH_NAD.pdf"), f)
