@@ -22,6 +22,7 @@ It was assumed that most reactions can only go in a forward direction to simplif
 The protome of the system is limited by a density constraint simulating the limited space of a cell. With that no singular enzyme concentration could not exceed a set upper boundary, while also contraining the complete proteome with this limit.
 For the baseline model no intracellular concentrations, fluxes or dG of reaction were fixed to a specific value. The metabolite concentrations are fixed between log(1e-9) and log(100e-3) (log(M)), the fluxes between -1 mmol/gDW/h and 100 mmol/gDW/h (gDW = gramm dry weight) and dG of reaction between -80 kJ/mol and 1 kJ/mol. 
 
+\section{Results}
 The base model shows that under a changing ratio of ATP to ADP the proteome stays overall consinstent, with only slight increases and decreases in a few enzymes (see \ref{fig:proteome_upper_atp} and \ref{fig:proteome_lower_atp}). The metabolite concentations change more drametically due to the ratio change, which are shown in \ref{fig:metabolites_upper_atp} and \ref{fig:metabolites_lower_atp}. 
 \begin{figure}[H]
     \centering
@@ -94,10 +95,28 @@ This conection can be seen in \ref{fig:upper_fluxes_atp} which shows that the fl
 This effect can not only be seen when looking at a change in the ATP/ADP ratio but also for a change in the ratio of NADH/NAD (\ref{fig:upper_fluxs_nadh}).
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.8\textwidth]{imgs/EMP-model/Upper_Glycolysis_Fluxes_ATP_ADP.pdf}
+    \includegraphics[width=0.8\textwidth]{imgs/EMP-model/Upper_Glycolysis_Fluxes_NADH_NAD.pdf}
     \caption{Plot of the change in fluxes of the upper glycolysis reactions due to the change in NADH/NAD ratio from 0.05 M to 10.0 M.}
     \label{fig:upper_fluxes_nadh}
 \end{figure}
+
+With the fuxes showing a stable relative distribution, the relative proteome showing little to no fluctuations th only part of the flux equation that can be changed is the termodynamic part. This term should change due to the differences in metabolite concentrations which do factor into the dG of reaction. 
+When we look at the change in dG of reaction for the upper glycolysis under both ATP/ADP (\ref{fig:upper_dG_atp}) and NADH/NAD (\ref{fig:upper_dg_nadh}) ration variation we can see that even these dG of reactions show little to no change. These small changes could be attributed to the fact that the metabolite concentration changes are too small to make a bigger difference. This can be seen in the fact that the relative change in dG of reaction is much bigger when the metaboite concentrations vary more strongly (see \ref{fig:upper_dG_pep_fixed_atp} and \ref{fig:upper_dG_pep_fixed_nadh}).
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{imgs/EMP-model/Upper_Glycolysis_dG_ATP_ADP.pdf}
+    \caption{Plot of dG of reaction of the Upper glycolysis reactions due to the change in ATP/ADP ratio from 0.1 M to 10.0 M.}
+    \label{fig:Upper_dG_atp}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{imgs/EMP-model/Upper_Glycolysis_dG_NADH_NAD.pdf}
+    \caption{Plot of dG of reaction of the Upper glycolysis reactions due to the change in NADH/NAD ratio from 0.05 M to 10.0 M.}
+    \label{fig:Upper_dG_nadh}
+\end{figure}
+
+The dG of reaction shows a stonger variation in it's relative distribution when looking at the model under a varying NADH/NAD ratio. 
 
 These behaiviors are not only observable for the fluxes and concentrations of the glycolysis reactions. They can also be seen if we compare the proteome and fluxes between the ratios for the glutamine synthesis, which means this behaivior is not exclusive to the gycolosis but fundamental to the system.
 In some of these plots not all concentrations are visible, but this is explainable with the fact that those concentrations of enzymes or metabolites or the fluxes are so low that they are comperativly small and don't show up in a graph that only shows relative concentrations.
@@ -150,6 +169,8 @@ Fixing other metabolite concentrations for example that of phosphoenolpyruvate l
     \label{fig:upper_metabolites_fdp_fixed_nadh}
 \end{figure}
 
+These models with fixed metabolite concentration also show similar changes to the dG of reaction as the base model, which due to their general similarity to the behavior shown by the base model is not surprising.
+
 Bigger changes can be obsereved with phosphoenolpyruvate (PEP) being fixed to a range between 1/4.0 * 1.8e-4 M and 4.0 * 1.8e-4 M. Here the relative proteome as well as the relative metabolite concentrations show changes. With the most promenent changes happening to the relative proteome of the upper (\ref{fig:upper_proteome_pep_fixed_atp}) and lower glycolysis (\ref{fig:lower_proteome_pep_fixed_atp}) as well as the gultamine synthesis (\ref{fig:glutamine_proteome_pep_fixed_atp}) under ATP/ADP ratio changes as well as the realative metabolite concentrations to the lower glycolysis metabolites under both ratios (\ref{fig:lower_metabolites_pep_fixed_atp}, \ref{fig:lower_metabolites_pep_fixed_nadh}) and the upper glycolysis with NADH/NAD ratio change (\ref{fig:upper_metabolite_pep_fixed_nadh}). 
 \begin{figure}[H]
     \centering
@@ -194,11 +215,29 @@ Bigger changes can be obsereved with phosphoenolpyruvate (PEP) being fixed to a 
 \end{figure}
 
 These models show the same relative flux distributions as the base model, and those with fixed cofactor concentrations. This supports the assumption that the fluxes are kept stable due to the change in metabolite concentrations, while the relative enzyme concentrations stay the same.
+For this model with fixed PEP concentration we can see that the dG of reaction varies stonger than in the base model.
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{imgs/EMP-model/PEP_fixed/Upper_Glycolysis_dG_ATP_ADP.pdf}
+    \caption{Relative dG of reaction of the upper glycolysis with a fixed PEP concentration and a variying ATP/ADP ratio.}
+    \label{fig:upper_dG_pep_fixed_atp}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{imgs/EMP-model/PEP_fixed/Upper_Glycolysis_dG_NADH_NAD.pdf}
+    \caption{Relative dG of reaction of the upper glycolysis with a fixed PEP concentration and a variying NADH/NAD ratio.}
+    \label{fig:upper_dG_pep_fixed_nadh}
+\end{figure}
 
 \section{Discussion}
-The results for the different models show that the protome is consistent over all different metabolite concentations and cofactor ratios. This leads to the fact that the concentrations of the intracellular metabolites are adjusted by the system to keep the relative reaction fluxes at stable rates. 
+As the results have shown, the base models realative proteome is stable over the varying ratios of ATP/ADP and NADH/NAD, as are the relative fluxes of the reactions of the system. The results also showed that the observable concentations for both entzymes and metabolites as well as the fluxes of the base model are mostly adhered to when the internal concentrations of metabolites and cofactors are are fixed. 
+The stable fluxes can be attrubuted to the fact that the metabolic concentrations are used as a buffer to keep the fluxes constant. Meaning as a result of the changes in the system - namely the change in ATP/ADP and NADH/NAD ratios - the reactions use different amounts of metabolites to keeep the fluxes stable. With these concentrations having an effect on the thermodynamic part of the flux equation it changes to accomadate the new conditions of the system. Due to the fact that the thermodynamic term already adjusts the flux equation to be stable there is no need for  a change in enzyme concentration.
 This behaivior can be explained by assuming that it is less cost efficient for the cell to synthesize or desythesize enzymes and it is better to use up different amounts of the metabolites. 
-The only other concentrations that change throughout these model are those of the cofactors, which can be mostly attributed to the fact that the varying ratio between the two cofactor pairs was the main methid uunder which the model was evaluated. 
 
+There is one metabolite PEP which lead to different results when it's concentration was. These differences can be explained with the fact that PEP is the first metabolite after the reaction sof the glycolysis that act as thermodynamic bottlenecks. It is also used for multiple reactions with both products (pyruvate and oxaloacetate) being important substrates for the glutamine synthesis. The combination of these factors leads to an increase in importance of PEP for the system.
+The extreme incrase in relative glucose-6-phosphate concentration under a fixed PEP value for the varying NADH/NAD ratio could be attributed to the low amount of NADH and NAD in the system slowing down the reactions following GLCpts.  
+The only other concentrations that change throughout these model are those of the cofactors, which can be mostly attributed to the fact that the varying ratio between the two cofactor pairs was the main methid uunder which the model was evaluated.
+ 
 The next step after this work could be to see how a model based on the ED glycolysis pathway behaves under the conditions this model was exposed to. If the assumption that the ED pathway is less thermodynamically constrained due to the reduction of thermodynamic botllenecks lower enzyme concentrations should be observable when both pathways are compared at the same reaction fluxes.
 Further this model could be extended to be a self replicatior model to see if and how this would affect the model, specifically the proteome which would be the main component impacted by this addition. For this a similar setup as the one described above in could be used. With this glutamine would serve a similar role to it's in vivo counterpart as an important precursor for many other cell metabolites.
