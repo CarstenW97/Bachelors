@@ -4,7 +4,7 @@ using ProgressMeter
 include(joinpath("src", "EMP-model", "model.jl"))
 import .GlnModel
 
-imgpath = joinpath("docs", "imgs", "EMP-model", "NADH_fixed")
+imgpath = joinpath("docs", "imgs", "EMP-model")
 
 #=
 Warm up problem to get all the symbols in the model.
@@ -371,7 +371,7 @@ f[1, 2] = Legend(
 )
 f
 
-FileIO.save(joinpath(imgpath, "lower_Glycolysis_Metabolites_NADH_NAD_abs.pdf"), f)
+FileIO.save(joinpath(imgpath, "Lower_Glycolysis_Metabolites_NADH_NAD_abs.pdf"), f)
 
 #=
 Plot upper glycolysis proteome
@@ -441,7 +441,7 @@ xscale = log10
 f[1, 2] = Legend(
     f,
     legendlabel="Enzyme",
-    [[scatter1, line1], [scatter2, line2], [scatter3, line3], [scatter4, line4]],
+    [[scatter1, line1], [scatter2, line2], [scatter3, line3], [scatter4, line4], [scatter5, line5]],
     ["pgk", "pgm", "pyk", "eno", "ldh"],
 )
 f

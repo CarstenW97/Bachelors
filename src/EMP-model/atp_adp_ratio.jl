@@ -4,7 +4,7 @@ using ProgressMeter
 include(joinpath("src", "EMP-model", "model.jl"))
 import .GlnModel
 
-imgpath = joinpath("docs", "imgs", "EMP-model", "NADH_fixed")
+imgpath = joinpath("docs", "imgs", "EMP-model")
 
 #=
 Warm up problem to get all the symbols in the model.
@@ -525,3 +525,51 @@ f[1, 2] = Legend(
 f
 
 FileIO.save(joinpath(imgpath, "Upper_Glycolysis_dG_ATP_ADP_abs.pdf"), f)
+
+#=
+Plot glutamine synthesis proteome
+=#
+x = exp.(atp)./exp.(adp)
+a = (ppc)
+b = (pfl)
+c = (pdh)
+d = (cs)
+e = (aconta)
+g = (acontb)
+h = (icdh)
+i = (gludy)
+j = (glns)
+
+f = Figure()
+ax = Axis(f[1, 1])
+scatter1 = scatter!(ax, x, a)
+line1 = lines!(ax, x, a)
+scatter2 = scatter!(ax, x, b)
+line2 = lines!(ax, x, b)
+scatter3 = scatter!(ax, x, c)
+line3 = lines!(ax, x, c)
+scatter4 = scatter!(ax, x, d)
+line4 = lines!(ax, x, d)
+scatter15 = scatter!(ax, x, e)
+line5 = lines!(ax, x, e)
+scatter6 = scatter!(ax, x, g)
+line6 = lines!(ax, x, g)
+scatter7 = scatter!(ax, x, h)
+line7 = lines!(ax, x, h)
+scatter8 = scatter!(ax, x, i)
+line8 = lines!(ax, x, i)
+scatter9 = scatter!(ax, x, j)
+line9 = lines!(ax, x, j)
+
+ax.xlabel = "ATP/ADP ratio"
+ax.ylabel = "dG of reaction"
+xscale = log10
+f[1, 2] = Legend(
+    f,
+    legendlabel="dG of reaction",
+    [[scatter1, line1], [scatter2, line2], [scatter3, line3], [scatter4, line4],[scatter5, line5], [scatter6, line6], [scatter7, line7], [scatter8, line8], [scatter9, line9]],
+    ["ppc", "pfl",  "pdh",  "cs",  "aconta",  "acontb",  "icdh",  "gludy",  "glns"],
+)
+f
+
+FileIO.save(joinpath(imgpath, "Glutamine_synthesis_Proteome_ATP_ADP_abs.pdf"), f)
