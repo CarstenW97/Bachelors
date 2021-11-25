@@ -1,82 +1,3 @@
-
-\section{Factorization of rate equations}
-See \cite{noor2013note} for details. The flux of a reaction can be factorized into three
-conceptually distinct terms: kinetic ($F_K$), thermodynamic ($F_T$) and regulatory ($F_R$),
-as shown in Equation \ref{eq:flux_factorization}.
-\begin{equation}
-    v = F_K \times F_T \times F_R
-    \label{eq:flux_factorization}
-\end{equation}
-
-Assuming that saturation and regulation effects can be ignored, i.e. the enzyme is substrate
-saturated, and if $\Delta_r G' \leq 0$, the forward flux can be expressed as in Equation \ref{eq:thermokinetic_flux_forward}.
-\begin{equation}
-    v_\text{forward} \leq \underbrace{\text{kcat} \times E_i}_{F_K} \times \underbrace{\left(1 - \exp \left( \frac{\Delta_r G'}{RT} \right)\right)}_{F_T}
-    \label{eq:thermokinetic_flux_forward}
-\end{equation}
-
-Likewise, if $\Delta_r G' \geq 0$, the backward flux can be expressed as Equation \ref{eq:thermokinetic_flux_backward}.
-\begin{equation}
-    v_\text{backward} \leq -\underbrace{\text{kcat}' \times E_i}_{F_K} \times \underbrace{\left(\exp \left( \frac{-\Delta_r G'}{RT}\right) - 1\right)}_{F_T}
-    \label{eq:thermokinetic_flux_backward}
-\end{equation}
-
-Taken together, the flux of a reaction can be bounded by Equation \ref{eq:thermokinetic_flux_bound},
-with the $\min$ and $\max$ ensuring that the thermodynamic factors are well behaved.
-\begin{equation}
-    \text{kcat}' \times E_i \times \min{\left(0, \exp \left( \frac{-\Delta_r G'}{RT}\right) - 1\right)} \leq v \leq \text{kcat} \times E_i \times \max \left(0, 1 - \exp \left( \frac{\Delta_r G'}{RT} \right)\right)
-    \label{eq:thermokinetic_flux_bound}
-\end{equation}
-
-Assuming that the forward and reverse $\text{kcat}$'s are the same, and that flux is always
-at its boundary (parsimonious enzyme usage), Equation \ref{eq:thermokinetic_flux_bound} can be
-simplified to Equation \ref{eq:thermokinetic_flux_simplified}.
-\begin{equation}
-    v = \text{kcat} \times E_i \times \text{sign}\left(\Delta_r G' \right) \times \left(1 - \exp \left( \frac{-|\Delta_r G'|}{RT} \right)\right)
-    \label{eq:thermokinetic_flux_simplified}
-\end{equation}
-
-Furthermore, to avoid the usage of indicator variables in the subsequent optimization
-problems, the thermodynamic term will be approximated, as shown in Equation
-\ref{eq:thermokinetic_tanh_approximation}, where $p$ is a fitting variable.
-\begin{equation}
-    \tanh \left(p \cdot x \right) \approx  \text{sign}\left( x \right) \times \left(1 - \exp \left( x \right)\right)
-    \label{eq:thermokinetic_tanh_approximation}
-\end{equation}
-
-The fit is shown in Figure \ref{fig:tanh_approximation}.
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=\textwidth]{imgs/tanh_approximation.pdf}
-    \caption{Fit of Equation \ref{eq:thermokinetic_tanh_approximation} where $p=-0.7$.}
-    \label{fig:tanh_approximation}
-\end{figure}
-
-\section{Thermokinetic algorithm}
-It is desirable to combine the MOMENT algorithm \cite{adadi2012prediction} with thermodynamic
-constraints, since such a formulation will necessarily be more physiologically representative
-of the underlying cellular metabolism. Equation \ref{eq:thermo_moment} shows this formulation,
-including the thermodynamic approximation of Equation \ref{eq:thermokinetic_tanh_approximation}.
-\begin{equation}
-\begin{aligned}
-& \underset{E, c, \Delta_r G^0}{\text{maximize}}
-& & c^T v \\
-& \text{subject to}
-& & S v = 0 \\
-& & & \Delta_r G_i = \Delta_r G_i^0 + R T \sum_j\nu_j\log\left(c_j \right) \\
-& & & v_i = \text{kcat}_i \times E_i \times \tanh \left(\frac{\Delta_r G_i}{RT} \right)\\
-& & & \sum_i E_i \leq \text{protein fraction}\\
-& & & c_{j, \text{LB}} \leq c_j \leq c_{j, \text{UB}}\\
-\end{aligned}
-\label{eq:thermo_moment}
-\end{equation}
-Where $c$, $v$, and $S$ retain their usual meaning from FBA, $E_i$ is the enzyme
-concentration of reaction $i$. When a constraint is indexed by $i$, it applies to each
-reaction in the model. Each reaction $i$ is also associated with a change in standard Gibbs free
-energy, $\Delta_r G_i^0$.
-
-
-
 \section{Thermodynamics constrains physical processes}
 The first law of thermodynamics is the law of energy conservation, energy can neither be created or destroyed but that energy can only be converted from one type to another.
 
@@ -320,12 +241,12 @@ In this model the precursor is used as the educt for both the lipid and enzyme s
 
 This basic model does not take overflow metabolism into account, it introduces the basic structure and boundaries for the model, to show the underlining relationships between the different parts. The model shows that there is a direct correlation between the substrate concentration and the growth rate. Specifically that an increase in substrate abundance leads to a higher growth rate, which occurs because at low substrate concentrations the cell has need of a lot more transporters to increase the chance of them coming into contact with a substrate molecule. 
 
-The connection between a growth rate and substrate concentration shown by this model in figure 2.1 can also be seen in the experimental data from \cite{schulze1964} in figure 2.2. This shows that the model behaves in a way that resembles in vivo data.
+The connection between a growth rate and substrate concentration shown by this model in figure 2.1 can also be seen in the experimental data from Schulze, et. al. 1964 \cite{schulze1964relationship} in figure 2.2. This shows that the model behaves in a way that resembles in vivo data.
 
 \begin{figure}[H]
     \centering
     \includegraphics[width=\textwidth]{imgs/fig2com.PNG}
-    \caption{1. The results of the model, showing that with an increase of the substrate concentration the growth rate increases up to a certain point where it starts to plateau. 2. Experimental data from \cite{schulze1964} which shows a similar behaviour to the data from the model, meaning this is not just a random behaviour in the model.}
+    \caption{1. The results of the model, showing that with an increase of the substrate concentration the growth rate increases up to a certain point where it starts to plateau. 2. Experimental data from Schulze, et. al. 1964 \cite{schulze1964relationship} which shows a similar behaviour to the data from the model, meaning this is not just a random behaviour in the model.}
     \label{fig:fig2com}
 \end{figure}
 
@@ -348,3 +269,80 @@ This increase in overall enzyme synthesis by the ribosomes - and thus the growth
     \caption{An increase in growth rate is linked to an increase in ribosome synthesis rate.}
     \label{fig:Figure_3E}
 \end{figure}
+
+
+\section{Factorization of rate equations}
+See \cite{noor2013note} for details. The flux of a reaction can be factorized into three
+conceptually distinct terms: kinetic ($F_K$), thermodynamic ($F_T$) and regulatory ($F_R$),
+as shown in Equation \ref{eq:flux_factorization}.
+\begin{equation}
+    v = F_K \times F_T \times F_R
+    \label{eq:flux_factorization}
+\end{equation}
+
+Assuming that saturation and regulation effects can be ignored, i.e. the enzyme is substrate
+saturated, and if $\Delta_r G' \leq 0$, the forward flux can be expressed as in Equation \ref{eq:thermokinetic_flux_forward}.
+\begin{equation}
+    v_\text{forward} \leq \underbrace{\text{kcat} \times E_i}_{F_K} \times \underbrace{\left(1 - \exp \left( \frac{\Delta_r G'}{RT} \right)\right)}_{F_T}
+    \label{eq:thermokinetic_flux_forward}
+\end{equation}
+
+Likewise, if $\Delta_r G' \geq 0$, the backward flux can be expressed as Equation \ref{eq:thermokinetic_flux_backward}.
+\begin{equation}
+    v_\text{backward} \leq -\underbrace{\text{kcat}' \times E_i}_{F_K} \times \underbrace{\left(\exp \left( \frac{-\Delta_r G'}{RT}\right) - 1\right)}_{F_T}
+    \label{eq:thermokinetic_flux_backward}
+\end{equation}
+
+Taken together, the flux of a reaction can be bounded by Equation \ref{eq:thermokinetic_flux_bound},
+with the $\min$ and $\max$ ensuring that the thermodynamic factors are well behaved.
+\begin{equation}
+    \text{kcat}' \times E_i \times \min{\left(0, \exp \left( \frac{-\Delta_r G'}{RT}\right) - 1\right)} \leq v \leq \text{kcat} \times E_i \times \max \left(0, 1 - \exp \left( \frac{\Delta_r G'}{RT} \right)\right)
+    \label{eq:thermokinetic_flux_bound}
+\end{equation}
+
+Assuming that the forward and reverse $\text{kcat}$'s are the same, and that flux is always
+at its boundary (parsimonious enzyme usage), Equation \ref{eq:thermokinetic_flux_bound} can be
+simplified to Equation \ref{eq:thermokinetic_flux_simplified}.
+\begin{equation}
+    v = \text{kcat} \times E_i \times \text{sign}\left(\Delta_r G' \right) \times \left(1 - \exp \left( \frac{-|\Delta_r G'|}{RT} \right)\right)
+    \label{eq:thermokinetic_flux_simplified}
+\end{equation}
+
+Furthermore, to avoid the usage of indicator variables in the subsequent optimization
+problems, the thermodynamic term will be approximated, as shown in Equation
+\ref{eq:thermokinetic_tanh_approximation}, where $p$ is a fitting variable.
+\begin{equation}
+    \tanh \left(p \cdot x \right) \approx  \text{sign}\left( x \right) \times \left(1 - \exp \left( x \right)\right)
+    \label{eq:thermokinetic_tanh_approximation}
+\end{equation}
+
+The fit is shown in Figure \ref{fig:tanh_approximation}.
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{imgs/tanh_approximation.pdf}
+    \caption{Fit of Equation \ref{eq:thermokinetic_tanh_approximation} where $p=-0.7$.}
+    \label{fig:tanh_approximation}
+\end{figure}
+
+\section{Thermokinetic algorithm}
+It is desirable to combine the MOMENT algorithm \cite{adadi2012prediction} with thermodynamic
+constraints, since such a formulation will necessarily be more physiologically representative
+of the underlying cellular metabolism. Equation \ref{eq:thermo_moment} shows this formulation,
+including the thermodynamic approximation of Equation \ref{eq:thermokinetic_tanh_approximation}.
+\begin{equation}
+\begin{aligned}
+& \underset{E, c, \Delta_r G^0}{\text{maximize}}
+& & c^T v \\
+& \text{subject to}
+& & S v = 0 \\
+& & & \Delta_r G_i = \Delta_r G_i^0 + R T \sum_j\nu_j\log\left(c_j \right) \\
+& & & v_i = \text{kcat}_i \times E_i \times \tanh \left(\frac{\Delta_r G_i}{RT} \right)\\
+& & & \sum_i E_i \leq \text{protein fraction}\\
+& & & c_{j, \text{LB}} \leq c_j \leq c_{j, \text{UB}}\\
+\end{aligned}
+\label{eq:thermo_moment}
+\end{equation}
+Where $c$, $v$, and $S$ retain their usual meaning from FBA, $E_i$ is the enzyme
+concentration of reaction $i$. When a constraint is indexed by $i$, it applies to each
+reaction in the model. Each reaction $i$ is also associated with a change in standard Gibbs free
+energy, $\Delta_r G_i^0$.

@@ -8,6 +8,8 @@ This thesis project consists of 30 reaction including the EMP glycolysis, glutam
     \label{fig:model_map}
 \end{figure}
 
+The glucose importer is assumed to act like a PTS, phosphorylating the glucose to glucose-6-phosphate as it is imported into the cell (primary active uniport). The import and export of the other metabolites lactate, ethanol and NH4 are passive transport proteins (secondary active symport).
+
 The flux equations for the model are based on \ref{eq:thermokinetic_flux_forward}, meaning substrate saturation was assumed. This leaves the katalytic constants, enzyme concetration and thermodynamics as the impacting variables.
 For reactions the dG values were calculated with the the dG0 for the reactions, the gas constant, temperature and the product and substarte concentrations.
 \begin{equation}
@@ -52,7 +54,7 @@ The base model shows that under a changing ratio of ATP to ADP the proteome stay
     \label{fig:metabolites_lower_atp}
 \end{figure}
 
-Similarly the metabolite concentrations for the NADH/NAD ratio change in a comparabble way to the ones seen for the ATP/ADP ratio. The change seen for the upper glycolysis (\ref{fig:metabolites_upper_nadh}) is less rapid and the concentrations of g6p and f6p do not drop as low as seen in \ref{metabolites_upper_atp}. For the lower glycolysis the metabolite concentration change (\ref{fig:metabolites_lower_nadh}) is smoother for the NADH/NAD ratio when compared to that of the ATP/ADP ratio (\ref{fig:metabolites_lower_atp}), but the genreal behavior is similar.
+Similarly the metabolite concentrations for the NADH/NAD ratio change in a comparabble way to the ones seen for the ATP/ADP ratio. The change seen for the upper glycolysis (\ref{fig:metabolites_upper_nadh}) is less rapid and the concentrations of g6p and f6p do not drop as low as seen in \ref{fig:metabolites_upper_atp}. For the lower glycolysis the metabolite concentration change (\ref{fig:metabolites_lower_nadh}) is smoother for the NADH/NAD ratio when compared to that of the ATP/ADP ratio (\ref{fig:metabolites_lower_atp}), but the genreal behavior is similar.
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.8\textwidth]{imgs/EMP-model/Upper_Glycolysis_Metabolites_NADH_NAD.pdf}
@@ -101,19 +103,19 @@ This effect can not only be seen when looking at a change in the ATP/ADP ratio b
 \end{figure}
 
 With the fuxes showing a stable relative distribution, the relative proteome showing little to no fluctuations th only part of the flux equation that can be changed is the termodynamic part. This term should change due to the differences in metabolite concentrations which do factor into the dG of reaction. 
-When we look at the change in dG of reaction for the upper glycolysis under both ATP/ADP (\ref{fig:upper_dG_atp}) and NADH/NAD (\ref{fig:upper_dg_nadh}) ration variation we can see that even these dG of reactions show little to no change. These small changes could be attributed to the fact that the metabolite concentration changes are too small to make a bigger difference. This can be seen in the fact that the relative change in dG of reaction is much bigger when the metaboite concentrations vary more strongly (see \ref{fig:upper_dG_pep_fixed_atp} and \ref{fig:upper_dG_pep_fixed_nadh}).
+When we look at the change in dG of reaction for the upper glycolysis under both ATP/ADP (\ref{fig:upper_dG_atp}) and NADH/NAD (\ref{fig:upper_dG_nadh}) ration variation we can see that even these dG of reactions show little to no change. These small changes could be attributed to the fact that the metabolite concentration changes are too small to make a bigger difference. This can be seen in the fact that the relative change in dG of reaction is much bigger when the metaboite concentrations vary more strongly (see \ref{fig:upper_dG_pep_fixed_atp} and \ref{fig:upper_dG_pep_fixed_nadh}).
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.8\textwidth]{imgs/EMP-model/Upper_Glycolysis_dG_ATP_ADP.pdf}
     \caption{Plot of dG of reaction of the Upper glycolysis reactions due to the change in ATP/ADP ratio from 0.1 M to 10.0 M.}
-    \label{fig:Upper_dG_atp}
+    \label{fig:upper_dG_atp}
 \end{figure}
 
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.8\textwidth]{imgs/EMP-model/Upper_Glycolysis_dG_NADH_NAD.pdf}
     \caption{Plot of dG of reaction of the Upper glycolysis reactions due to the change in NADH/NAD ratio from 0.05 M to 10.0 M.}
-    \label{fig:Upper_dG_nadh}
+    \label{fig:upper_dG_nadh}
 \end{figure}
 
 The dG of reaction shows a stonger variation in it's relative distribution when looking at the model under a varying NADH/NAD ratio. 
@@ -122,7 +124,7 @@ These behaiviors are not only observable for the fluxes and concentrations of th
 In some of these plots not all concentrations are visible, but this is explainable with the fact that those concentrations of enzymes or metabolites or the fluxes are so low that they are comperativly small and don't show up in a graph that only shows relative concentrations.
 
 The trend of a mostly stable relative proteome continues even when the cofactors are fixed, while the matabolite concentrations show a similar behavior to the system without fixed cofactor concentrations. This also has the same effect on the relative fuxes, meaning they do not change as a result. The only thing that shows a difference to the base model are the relative cofactor concentrations themselves, which makes sense, if they are more limited in their range than before that would mean that the ratio between them change. They also show similar changes in cofactor concentrations between themselves, with the plots for fixed ATP (\ref{fig:cofactor_atp_fixed_atp}) and ADP (\ref{fig:cofactor_adp_fixed_atp}) being almost the same, with the slight difference in the NADH concentration maximum. 
-The values to which the cofactors are fixed were taken from \cite{bennett2009absolute}. With these fixed ATP and ADP concentrations the ratio change for NADH/NAD also show generally the same trend, with the ATP concentration being lower when the ATP concentration is fixed. The relative NADH and NAD concentrations resembeling those of the system with fixed ATP and ADP.
+The values to which the cofactors are fixed were taken from Bennett, et. al. 2009 \cite{bennett2009absolute}. With these fixed ATP and ADP concentrations the ratio change for NADH/NAD also show generally the same trend, with the ATP concentration being lower when the ATP concentration is fixed. The relative NADH and NAD concentrations resembeling those of the system with fixed ATP and ADP.
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.8\textwidth]{imgs/EMP-model/ATP_fixed/Cofactor_Metabolites_ATP_ADP.pdf}
