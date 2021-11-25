@@ -4,7 +4,7 @@ using ProgressMeter
 include(joinpath("src", "EMP-model", "model.jl"))
 import .GlnModel
 
-imgpath = joinpath("docs", "imgs", "EMP-model")
+imgpath = joinpath("docs", "imgs", "EMP-model", "NADH_fixed")
 
 #=
 Warm up problem to get all the symbols in the model.
@@ -268,3 +268,260 @@ f = plot_proteome(x, fracs, fraclabels;
 )
 
 FileIO.save(joinpath(imgpath, "Glutamine_synthesis_dG_NADH_NAD.pdf"), f)
+
+### Absolte plots ###
+
+#=
+Plot cofactor metabolites
+=#
+x = exp.(nadh)./exp.(nad)
+a = exp.([adp]...)
+b = exp.([atp]...)
+c = exp.([nad]...)
+d = exp.([nadh]...)
+
+f = Figure()
+ax = Axis(f[1, 1])
+scatter1 = scatter!(ax, x, a)
+line1 = lines!(ax, x, a)
+scatter2 = scatter!(ax, x, b)
+line2 = lines!(ax, x, b)
+scatter3 = scatter!(ax, x, c)
+line3 = lines!(ax, x, c)
+scatter4 = scatter!(ax, x, d)
+line4 = lines!(ax, x, d)
+
+ax.xlabel = "NADH/NAD ratio"
+ax.ylabel = "Metabolite concentration [M]"
+xscale = log10
+f[1, 2] = Legend(
+    f,
+    legendlabel="Metabolite",
+    [[scatter1, line1], [scatter2, line2], [scatter3, line3], [scatter4, line4]],
+    ["ADP", "ATP", "NAD", "NADH"],
+)
+f
+
+FileIO.save(joinpath(imgpath, "Cofactor_Metabolites_NADH_NAD_abs.pdf"), f)
+
+#=
+Plot upper glycolysis metabolites
+=#
+x = exp.(nadh)./exp.(nad)
+a = exp.([g6p]...)
+b = exp.([f6p]...)
+c = exp.([fdp]...)
+d = exp.([dhap]...)
+e = exp.([g3p]...)
+g = exp.([dpg13]...)
+
+f = Figure()
+ax = Axis(f[1, 1])
+scatter1 = scatter!(ax, x, a)
+line1 = lines!(ax, x, a)
+scatter2 = scatter!(ax, x, b)
+line2 = lines!(ax, x, b)
+scatter3 = scatter!(ax, x, c)
+line3 = lines!(ax, x, c)
+scatter4 = scatter!(ax, x, d)
+line4 = lines!(ax, x, d)
+scatter5 = scatter!(ax, x, e)
+line5 = lines!(ax, x, e)
+scatter6 = scatter!(ax, x, g)
+line6 = lines!(ax, x, g)
+
+ax.xlabel = "NADH/NAD ratio"
+ax.ylabel = "Metabolite concentration [M]"
+xscale = log10
+f[1, 2] = Legend(
+    f,
+    legendlabel="Metabolite",
+    [[scatter1, line1], [scatter2, line2], [scatter3, line3], [scatter4, line4], [scatter5, line5], [scatter6, line6]],
+    ["g6p", "f6p", "fdp", "dhap", "g3p", "dpg13"],
+)
+f
+
+FileIO.save(joinpath(imgpath, "Upper_Glycolysis_Metabolites_NADH_NAD_abs.pdf"), f)
+
+#=
+Plot lower glycolysis metabolites
+=#
+x = exp.(nadh)./exp.(nad)
+a = exp.([pg3]...)
+b = exp.([pg2]...)
+c = exp.([pep]...)
+
+f = Figure()
+ax = Axis(f[1, 1])
+scatter1 = scatter!(ax, x, a)
+line1 = lines!(ax, x, a)
+scatter2 = scatter!(ax, x, b)
+line2 = lines!(ax, x, b)
+scatter3 = scatter!(ax, x, c)
+line3 = lines!(ax, x, c)
+
+ax.xlabel = "NADH/NAD ratio"
+ax.ylabel = "Metabolite concentration [M]"
+xscale = log10
+f[1, 2] = Legend(
+    f,
+    legendlabel="Metabolite",
+    [[scatter1, line1], [scatter2, line2], [scatter3, line3]],
+    ["p3g", "pg2", "pep"],
+)
+f
+
+FileIO.save(joinpath(imgpath, "lower_Glycolysis_Metabolites_NADH_NAD_abs.pdf"), f)
+
+#=
+Plot upper glycolysis proteome
+=#
+x = exp.(nadh)./exp.(nad)
+a = (pts)
+b = (pgi)
+c = (pfk)
+d = (fba)
+e = (tpi)
+g = (gapd)
+
+f = Figure()
+ax = Axis(f[1, 1])
+scatter1 = scatter!(ax, x, a)
+line1 = lines!(ax, x, a)
+scatter2 = scatter!(ax, x, b)
+line2 = lines!(ax, x, b)
+scatter3 = scatter!(ax, x, c)
+line3 = lines!(ax, x, c)
+scatter4 = scatter!(ax, x, d)
+line4 = lines!(ax, x, d)
+scatter5 = scatter!(ax, x, e)
+line5 = lines!(ax, x, e)
+scatter6 = scatter!(ax, x, g)
+line6 = lines!(ax, x, g)
+
+ax.xlabel = "NADH/NAD ratio"
+ax.ylabel = "Enzyme concentration [g enz / g DW]"
+xscale = log10
+f[1, 2] = Legend(
+    f,
+    legendlabel="Enzyme",
+    [[scatter1, line1], [scatter2, line2], [scatter3, line3], [scatter4, line4], [scatter5, line5], [scatter6, line6]],
+    ["pts", "pgi", "pfk", "fba", "tpi", "gapd"],
+)
+f
+
+FileIO.save(joinpath(imgpath, "Upper_Glycolysis_Proteome_NADH_NAD_abs.pdf"), f)
+
+#=
+Plot lower glycolysis proteome
+=#
+x = exp.(nadh)./exp.(nad)
+a = (pgk)
+b = (pgm)
+c = (pyk)
+d = (eno)
+e = (ldh)
+
+f = Figure()
+ax = Axis(f[1, 1])
+scatter1 = scatter!(ax, x, a)
+line1 = lines!(ax, x, a)
+scatter2 = scatter!(ax, x, b)
+line2 = lines!(ax, x, b)
+scatter3 = scatter!(ax, x, c)
+line3 = lines!(ax, x, c)
+scatter4 = scatter!(ax, x, d)
+line4 = lines!(ax, x, d)
+scatter5 = scatter!(ax, x, e)
+line5 = lines!(ax, x, e)
+
+ax.xlabel = "NADH/NAD ratio"
+ax.ylabel = "Enzyme concentration [g enz / g DW]"
+xscale = log10
+f[1, 2] = Legend(
+    f,
+    legendlabel="Enzyme",
+    [[scatter1, line1], [scatter2, line2], [scatter3, line3], [scatter4, line4]],
+    ["pgk", "pgm", "pyk", "eno", "ldh"],
+)
+f
+
+FileIO.save(joinpath(imgpath, "Lower_Glycolysis_Proteome_NADH_NAD_abs.pdf"), f)
+
+#=
+Plot Fluxes of reactions in upper glycolysis
+=#
+x = exp.(nadh)./exp.(nad)
+a = (v_pts)
+b = (v_pgi)
+c = (v_pfk)
+d = (v_fba)
+e = (v_tpi)
+g = (v_gapd)
+
+f = Figure()
+ax = Axis(f[1, 1])
+scatter1 = scatter!(ax, x, a)
+line1 = lines!(ax, x, a)
+scatter2 = scatter!(ax, x, b)
+line2 = lines!(ax, x, b)
+scatter3 = scatter!(ax, x, c)
+line3 = lines!(ax, x, c)
+scatter4 = scatter!(ax, x, d)
+line4 = lines!(ax, x, d)
+scatter5 = scatter!(ax, x, e)
+line5 = lines!(ax, x, e)
+scatter6 = scatter!(ax, x, g)
+line6 = lines!(ax, x, g)
+
+ax.xlabel = "NADH/NAD ratio"
+ax.ylabel = "Fluxes [mmol/gDW/h]"
+xscale = log10
+f[1, 2] = Legend(
+    f,
+    legendlabel="Flux",
+    [[scatter1, line1], [scatter2, line2], [scatter3, line3], [scatter4, line4], [scatter5, line5], [scatter6, line6]],
+    ["v_pts", "v_pgi", "v_pfk", "v_fba", "v_tpi", "v_gapd"],
+)
+f
+
+FileIO.save(joinpath(imgpath, "Upper_Glycolysis_Fluxes_NADH_NAD_abs.pdf"), f)
+
+#=
+Plot dG of reactions in upper glycolysis
+=#
+x = exp.(nadh)./exp.(nad)
+a = (dg_pts)
+b = (dg_pgi)
+c = (dg_pfk)
+d = (dg_fba)
+e = (dg_tpi)
+g = (dg_gapd)
+
+f = Figure()
+ax = Axis(f[1, 1])
+scatter1 = scatter!(ax, x, a)
+line1 = lines!(ax, x, a)
+scatter2 = scatter!(ax, x, b)
+line2 = lines!(ax, x, b)
+scatter3 = scatter!(ax, x, c)
+line3 = lines!(ax, x, c)
+scatter4 = scatter!(ax, x, d)
+line4 = lines!(ax, x, d)
+scatter15 = scatter!(ax, x, e)
+line5 = lines!(ax, x, e)
+scatter6 = scatter!(ax, x, g)
+line6 = lines!(ax, x, g)
+
+ax.xlabel = "NADH/NAD ratio"
+ax.ylabel = "dG of reaction"
+xscale = log10
+f[1, 2] = Legend(
+    f,
+    legendlabel="dG of reaction",
+    [[scatter1, line1], [scatter2, line2], [scatter3, line3], [scatter4, line4],[scatter5, line5], [scatter6, line6]],
+    ["dg_pts", "dg_pgi", "dg_pfk", "dg_fba", "dg_tpi", "dg_gapd"],
+)
+f
+
+FileIO.save(joinpath(imgpath, "Upper_Glycolysis_dG_NADH_NAD_abs.pdf"), f)
